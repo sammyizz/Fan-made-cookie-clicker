@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Clicker - Deluxe Edition</title>
+    <title>Cookie Clicker - Deluxe Edition v2.8</title>
+    
+    <!-- PWA Web App Manifest (Data URI) -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Cookie Clicker Deluxe v2.8","short_name":"CookieClicker","start_url":".","display":"standalone","background_color":"#020617","theme_color":"#f59e0b","icons":[{"src":"https://placehold.co/192x192/f59e0b/020617?text=COOKIE","sizes":"192x192","type":"image/png"},{"src":"https://placehold.co/512x512/f59e0b/020617?text=COOKIE","sizes":"512x512","type":"image/png"}]}'>
+    <meta name="theme-color" content="#f59e0b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CookieClicker">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -23,7 +31,7 @@
 
         .cookie-btn {
             transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5));
         }
 
         .cookie-btn:active {
@@ -31,10 +39,9 @@
         }
 
         .cookie-btn:hover {
-            filter: drop-shadow(0 20px 30px rgba(234, 179, 8, 0.4));
+            filter: drop-shadow(0 20px 30px rgba(234, 179, 8, 0.6));
         }
 
-        /* Floating text animation */
         @keyframes floatUp {
             0% {
                 opacity: 1;
@@ -42,25 +49,34 @@
             }
             100% {
                 opacity: 0;
-                transform: translateY(-80px) scale(1.3);
+                transform: translateY(-90px) scale(1.3);
             }
         }
 
         .floating-num {
             position: absolute;
             pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
+            animation: floatUp 0.85s ease-out forwards;
             font-family: 'Fredoka One', cursive;
             text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
         }
 
-        /* Glow effects for VIP */
         .vip-gold-glow {
-            box-shadow: 0 0 25px rgba(234, 179, 8, 0.6), inset 0 0 15px rgba(254, 240, 138, 0.8);
+            box-shadow: 0 0 35px rgba(234, 179, 8, 0.7), inset 0 0 20px rgba(254, 240, 138, 0.8);
             border-color: #facc15 !important;
         }
 
-        /* Custom scrollbar */
+        .premium-rainbow-glow {
+            box-shadow: 0 0 45px rgba(236, 72, 153, 0.8), 0 0 20px rgba(99, 102, 241, 0.6);
+            animation: rainbowPulse 3s infinite linear;
+            border-color: #ec4899 !important;
+        }
+
+        @keyframes rainbowPulse {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -74,47 +90,127 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #475569;
         }
+
+        .wheel-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 6px solid #f59e0b;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.6), inset 0 0 20px rgba(0,0,0,0.9);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-top: 28px solid #ef4444;
+            z-index: 30;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
+        }
+
+        @keyframes rageShake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-4px, 4px) rotate(-1deg); }
+            40% { transform: translate(-4px, -4px) rotate(1deg); }
+            60% { transform: translate(4px, 4px) rotate(0deg); }
+            80% { transform: translate(4px, -4px) rotate(1deg); }
+        }
+
+        .rage-shake-bg {
+            animation: rageShake 0.4s infinite;
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden flex flex-col">
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
+    <!-- Top Header Bar -->
     <header class="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md sticky top-0 z-40 px-4 py-3 flex flex-wrap justify-between items-center gap-4 shadow-lg">
         <div class="flex items-center gap-3">
-            <i class="fa-solid font-game text-amber-500 text-3xl fa-cookie-bite"></i>
+            <i class="fa-solid font-game text-amber-500 text-3xl fa-cookie-bite animate-bounce"></i>
             <div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
                     <h1 id="bakeryNameDisplay" class="font-game text-xl md:text-2xl text-amber-400 tracking-wide">Luca's Bakery</h1>
-                    <button onclick="openNameModal()" class="text-slate-400 hover:text-white transition-colors text-sm bg-slate-800 p-1.5 rounded-lg border border-slate-700" title="Change Bakery Name">
-                        <i class="fa-solid fa-pen"></i>
+                    <button onclick="openNameModal()" class="text-slate-400 hover:text-white transition-colors text-xs bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded-lg border border-slate-700 flex items-center gap-1" title="Change Bakery Name">
+                        <i class="fa-solid fa-pen text-[10px]"></i> Edit Name
                     </button>
+                    <!-- Badges -->
+                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/50 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        v2.8
+                    </span>
                     <span id="vipBadge" class="hidden bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-extrabold text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md animate-pulse">
-                        <i class="fa-solid fa-crown mr-1"></i> VIP
+                        <i class="fa-solid fa-crown mr-1"></i> VIP 10x (<span id="vipHeaderTimer">05:00</span>)
+                    </span>
+                    <span id="premiumBadge" class="hidden bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-extrabold text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-lg animate-pulse">
+                        <i class="fa-solid fa-gem mr-1"></i> PREMIUM 50x (<span id="premiumHeaderTimer">05:00</span>)
+                    </span>
+                    <span id="debuffBadge" class="hidden bg-red-950 border border-red-500 text-red-400 font-extrabold text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md">
+                        <i class="fa-solid fa-ban mr-1"></i> PERMANENT BUFF DOWN
                     </span>
                 </div>
-                <p class="text-xs text-slate-400">Baking the world a better place</p>
+                <p id="bakerySubtext" class="text-xs text-amber-400/80 font-bold">DELUXE EDITION v2.8 - Save/Load & PWA App Integrated!</p>
             </div>
         </div>
 
-        <!-- Top Right Controls & VIP Buy Button -->
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <button id="vipBuyBtn" onclick="buyVIP()" class="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 border border-yellow-300">
-                <i class="fa-solid fa-gem text-lg"></i>
-                <span>VIP Pass <span class="bg-slate-950/20 text-slate-950 px-1.5 py-0.5 rounded text-xs font-black">$5.99</span></span>
+            <!-- PWA App Install Button -->
+            <button id="pwaInstallBtn" onclick="openInstallModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl transition-all border border-indigo-400 text-xs flex items-center gap-1.5 shadow-md">
+                <i class="fa-solid fa-mobile-screen-button text-indigo-200"></i> <span>Download App</span>
             </button>
 
-            <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 p-2.5 rounded-xl text-amber-400 transition-colors" title="Toggle Sound">
-                <i id="soundIcon" class="fa-solid fa-volume-high text-lg"></i>
+            <button onclick="openPatchNotesModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl transition-all border border-slate-700 text-xs flex items-center gap-1.5" title="What's New in v2.8">
+                <i class="fa-solid fa-scroll text-amber-400"></i> What's New
+            </button>
+            
+            <button onclick="openIntroModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl transition-all border border-slate-700 text-xs flex items-center gap-1.5" title="Rules & Guide">
+                <i class="fa-solid fa-circle-info text-sky-400"></i> Rules
             </button>
 
-            <button onclick="resetGamePrompt()" class="bg-slate-800 hover:bg-rose-900/50 border border-slate-700 hover:border-rose-700 text-slate-400 hover:text-rose-300 p-2.5 rounded-xl transition-colors" title="Reset Game Progress">
-                <i class="fa-solid fa-rotate-right text-lg"></i>
+            <!-- Save & Exit Button -->
+            <button onclick="saveAndExitGame()" class="bg-emerald-900/80 hover:bg-emerald-800 text-emerald-300 font-bold px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl transition-all border border-emerald-600/60 text-xs flex items-center gap-1.5 shadow-md">
+                <i class="fa-solid fa-right-from-bracket text-emerald-400"></i> Save & Exit
+            </button>
+
+            <!-- VIP Buy Button -->
+            <button id="vipBuyBtn" onclick="buyVIP()" class="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 font-bold px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1.5 border border-yellow-300 text-xs sm:text-sm">
+                <i class="fa-solid fa-crown text-sm"></i>
+                <span>VIP PASS <span class="bg-slate-950/30 text-slate-950 px-1 py-0.5 rounded text-[10px] font-black">$5.99</span></span>
+            </button>
+
+            <!-- Premium Buy Button -->
+            <button id="premiumBuyBtn" onclick="startPremiumPurchase()" class="bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 text-white font-extrabold px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-xl transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1.5 border border-pink-300/40 text-xs sm:text-sm">
+                <i class="fa-solid fa-gem text-sm animate-spin" style="animation-duration: 4s;"></i>
+                <span>PREMIUM <span class="bg-black/30 text-pink-200 px-1 py-0.5 rounded text-[10px] font-black">$50.00</span></span>
+            </button>
+
+            <!-- Sound & Reset -->
+            <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 p-2 rounded-xl text-amber-400 transition-colors" title="Toggle Sound">
+                <i id="soundIcon" class="fa-solid fa-volume-high text-base"></i>
+            </button>
+
+            <button onclick="resetGamePrompt()" class="bg-slate-800 hover:bg-rose-900/50 border border-slate-700 hover:border-rose-700 text-slate-400 hover:text-rose-300 p-2 rounded-xl transition-colors" title="Reset Save Data">
+                <i class="fa-solid fa-rotate-right text-base"></i>
             </button>
         </div>
     </header>
 
     <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 max-w-7xl mx-auto w-full">
         
-        <!-- LEFT COLUMN: Stats & Hack Status -->
+        <!-- LEFT COLUMN: Stats -->
         <section class="lg:col-span-3 bg-slate-900/50 rounded-2xl border border-slate-800/80 p-4 flex flex-col justify-between backdrop-blur-sm order-2 lg:order-1">
             <div>
                 <h2 class="font-game text-slate-300 text-lg mb-3 flex items-center gap-2">
@@ -123,7 +219,7 @@
                 
                 <div class="space-y-3">
                     <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                        <div class="text-xs text-slate-400 uppercase font-semibold tracking-wider">Per Click</div>
+                        <div class="text-xs text-slate-400 uppercase font-semibold tracking-wider">Per Click (CPC)</div>
                         <div id="cpcDisplay" class="text-lg font-bold text-amber-400 font-game">1</div>
                     </div>
                     <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
@@ -135,233 +231,570 @@
                         <div id="totalBakedDisplay" class="text-lg font-bold text-purple-400 font-game">0</div>
                     </div>
                     <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                        <div class="text-xs text-slate-400 uppercase font-semibold tracking-wider">Goal to Win</div>
+                        <div class="text-xs text-slate-400 uppercase font-semibold tracking-wider">Victory Goal</div>
                         <div class="text-sm font-bold text-sky-400 font-game">6,000,000,000</div>
-                        <!-- Progress bar -->
-                        <div class="w-full bg-slate-800 h-2 rounded-full mt-2 overflow-hidden">
-                            <div id="winProgressBar" class="bg-gradient-to-r from-amber-500 to-sky-400 h-full w-0 transition-all duration-300"></div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full mt-2 overflow-hidden border border-slate-700/50">
+                            <div id="winProgressBar" class="bg-gradient-to-r from-amber-500 to-emerald-400 h-full w-0 transition-all duration-300"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Secret Hacks Unlock Banner -->
-                <div id="hackUnlockedBanner" class="hidden mt-4 p-3 bg-red-950/50 border border-red-500/40 rounded-xl text-red-300 text-xs text-center animate-pulse">
+                <!-- Cheat Console Banner -->
+                <div id="hackUnlockedBanner" class="hidden mt-4 p-3 bg-red-950/60 border border-red-500/50 rounded-xl text-red-300 text-xs text-center animate-pulse shadow-lg">
                     <i class="fa-solid fa-terminal text-base mb-1 block text-red-400"></i>
-                    <strong>SECRET HACKS UNLOCKED!</strong><br>Check the Hacks tab in the shop panel!
+                    <strong>HACKS ACTIVE!</strong><br>Access cheat controls in the shop tab panel!
                 </div>
             </div>
 
-            <!-- VIP Status Card in Left Sidebar -->
-            <div id="vipSidebarCard" class="mt-4 p-3 bg-gradient-to-br from-amber-950/30 to-yellow-900/10 border border-amber-800/40 rounded-xl hidden">
-                <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase mb-1">
-                    <i class="fa-solid fa-crown"></i> VIP Lounge Active
+            <!-- VIP & Premium Sidebar Cards -->
+            <div class="space-y-2 mt-4">
+                <div id="vipSidebarCard" class="p-3 bg-gradient-to-br from-amber-950/40 to-yellow-900/20 border border-amber-800/50 rounded-xl hidden">
+                    <div class="flex items-center justify-between text-amber-400 font-bold text-xs uppercase mb-1">
+                        <span><i class="fa-solid fa-crown mr-1"></i> VIP Active</span>
+                        <span id="vipSidebarTimer" class="font-game text-yellow-300">05:00</span>
+                    </div>
+                    <p class="text-[11px] text-amber-200/80">10x Multiplier Active!</p>
                 </div>
-                <p class="text-xs text-amber-200/70">+50% Global Cookie Bonus applied!</p>
+
+                <div id="premiumSidebarCard" class="p-3 bg-gradient-to-br from-pink-950/50 to-purple-900/30 border border-pink-500/50 rounded-xl hidden">
+                    <div class="flex items-center justify-between text-pink-400 font-bold text-xs uppercase mb-1">
+                        <span><i class="fa-solid fa-gem mr-1"></i> Premium Active</span>
+                        <span id="premiumSidebarTimer" class="font-game text-pink-300">05:00</span>
+                    </div>
+                    <p class="text-[11px] text-purple-200/80">50x Multiplier Active!</p>
+                </div>
             </div>
         </section>
 
-        <!-- CENTER COLUMN: Big Cookie Clicker Area -->
-        <section class="lg:col-span-5 bg-gradient-to-b from-slate-900/80 to-slate-950/90 rounded-2xl border border-slate-800 p-6 flex flex-col items-center justify-between relative overflow-hidden shadow-2xl order-1 lg:order-2 min-h-[420px]">
+        <!-- CENTER COLUMN: Interactive Clicker Cookie -->
+        <section class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-900/30 rounded-2xl border border-slate-800/50 relative overflow-hidden order-1 lg:order-2 min-h-[420px]">
+            <div id="goldenCookieContainer" class="absolute inset-0 pointer-events-none z-30"></div>
+            <div id="cookieGlow" class="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 blur-3xl pointer-events-none rounded-full transform scale-90"></div>
             
-            <!-- Background Glow -->
-            <div id="cookieGlow" class="absolute inset-0 bg-amber-500/5 blur-3xl pointer-events-none rounded-full transform scale-75"></div>
-
-            <!-- Cookie Counters -->
-            <div class="text-center z-10 w-full">
-                <div class="text-xs text-amber-500/80 uppercase font-bold tracking-widest mb-1">Current Balance</div>
-                <div id="cookieCountDisplay" class="text-4xl md:text-5xl font-extrabold text-amber-400 font-game drop-shadow-md tracking-tight">
-                    0
-                </div>
-                <div class="text-xs text-slate-400 mt-1">cookies</div>
+            <div class="text-center z-10 mb-6">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest block mb-1">Cookies in Stock</span>
+                <div id="cookieCountDisplay" class="font-game text-4xl sm:text-5xl md:text-6xl text-amber-400 tracking-wider drop-shadow-md">0</div>
+                <div id="cpsSubDisplay" class="text-xs text-amber-300/80 font-medium mt-1">+0 per second</div>
             </div>
 
-            <!-- Main Interactive Cookie -->
-            <div class="relative my-8 flex items-center justify-center z-10">
-                <button id="mainCookie" onclick="clickCookie(event)" class="cookie-btn focus:outline-none group">
-                    <svg id="cookieSvg" class="w-56 h-56 md:w-64 md:h-64 filter drop-shadow-2xl cursor-pointer" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Cookie Base -->
-                        <circle cx="100" cy="100" r="90" fill="#D97706" stroke="#92400E" stroke-width="6"/>
-                        <circle cx="100" cy="100" r="85" fill="#F59E0B"/>
-                        <!-- Chocolate Chips -->
-                        <circle cx="60" cy="60" r="12" fill="#451A03"/>
-                        <circle cx="135" cy="65" r="14" fill="#451A03"/>
-                        <circle cx="85" cy="115" r="13" fill="#451A03"/>
-                        <circle cx="140" cy="125" r="11" fill="#451A03"/>
-                        <circle cx="65" cy="145" r="15" fill="#451A03"/>
-                        <circle cx="110" cy="160" r="10" fill="#451A03"/>
-                        <circle cx="100" cy="50" r="8" fill="#451A03"/>
-                        <!-- Highlights -->
-                        <circle cx="45" cy="45" r="5" fill="#FDE68A" opacity="0.6"/>
-                        <circle cx="155" cy="50" r="6" fill="#FDE68A" opacity="0.6"/>
+            <div class="relative group my-auto z-10">
+                <button id="mainCookieBtn" onclick="clickCookie(event)" class="cookie-btn focus:outline-none cursor-pointer transform transition-transform">
+                    <svg id="cookieSvg" class="w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 drop-shadow-2xl transition-all rounded-full" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="90" fill="#D97706" stroke="#B45309" stroke-width="6"/>
+                        <circle cx="100" cy="100" r="82" fill="#F59E0B"/>
+                        <circle cx="65" cy="60" r="11" fill="#451A03"/>
+                        <circle cx="135" cy="70" r="13" fill="#451A03"/>
+                        <circle cx="80" cy="125" r="12" fill="#451A03"/>
+                        <circle cx="140" cy="130" r="10" fill="#451A03"/>
+                        <circle cx="105" cy="85" r="14" fill="#451A03"/>
+                        <circle cx="50" cy="115" r="9" fill="#451A03"/>
+                        <circle cx="115" cy="155" r="10" fill="#451A03"/>
                     </svg>
                 </button>
-                <!-- Floating numbers layer -->
-                <div id="floatingLayer" class="absolute inset-0 pointer-events-none"></div>
             </div>
 
-            <!-- Click Info Footer -->
-            <div class="text-slate-400 text-xs text-center z-10 bg-slate-950/40 px-4 py-2 rounded-full border border-slate-800">
-                Click the giant cookie to generate cookies!
-            </div>
+            <div id="clickContainer" class="absolute inset-0 pointer-events-none z-20"></div>
         </section>
 
-        <!-- RIGHT COLUMN: Shop, Upgrades, & Hacks Panel -->
-        <section class="lg:col-span-4 bg-slate-900/50 rounded-2xl border border-slate-800 p-4 flex flex-col backdrop-blur-sm order-3">
-            
-            <!-- Tab Navigation Header -->
-            <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-3">
-                <button id="tabShopBtn" onclick="switchTab('shop')" class="flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-amber-500 text-slate-950 shadow">
-                    <i class="fa-solid fa-store mr-1"></i> Buildings
+        <!-- RIGHT COLUMN: Store Tabs -->
+        <section class="lg:col-span-4 bg-slate-900/60 rounded-2xl border border-slate-800/80 p-4 flex flex-col backdrop-blur-sm order-3 h-[580px]">
+            <div class="flex border-b border-slate-800 mb-3 gap-1">
+                <button id="tabBuildingsBtn" onclick="switchTab('buildings')" class="flex-1 py-2 text-xs font-bold font-game border-b-2 border-amber-500 text-amber-400 flex items-center justify-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-industry"></i> Buildings
                 </button>
-                <button id="tabUpgradesBtn" onclick="switchTab('upgrades')" class="flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-slate-800 text-slate-300 hover:bg-slate-700">
-                    <i class="fa-solid fa-bolt mr-1"></i> Upgrades
+                <button id="tabUpgradesBtn" onclick="switchTab('upgrades')" class="flex-1 py-2 text-xs font-bold font-game border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-bolt"></i> Upgrades
                 </button>
-                <button id="tabHacksBtn" onclick="switchTab('hacks')" class="hidden flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-red-900/40 border border-red-600/50 text-red-300 hover:bg-red-800/50">
-                    <i class="fa-solid fa-skull mr-1"></i> Hacks
+                <button id="tabHacksBtn" onclick="switchTab('hacks')" class="hidden flex-1 py-2 text-xs font-bold font-game border-b-2 border-transparent text-red-400 hover:text-red-300 flex items-center justify-center gap-1.5 transition-colors animate-pulse">
+                    <i class="fa-solid fa-terminal"></i> Hacks
                 </button>
             </div>
 
-            <!-- Tab Content: Buildings Shop -->
-            <div id="tabShop" class="flex-1 overflow-y-auto pr-1 space-y-2.5 max-h-[500px] lg:max-h-[600px]">
-                <!-- Buildings rendered dynamically -->
-            </div>
+            <div id="buildingsTab" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            <div id="upgradesTab" class="hidden flex-1 overflow-y-auto space-y-2 pr-1"></div>
 
-            <!-- Tab Content: Upgrades -->
-            <div id="tabUpgrades" class="hidden flex-1 overflow-y-auto pr-1 space-y-2.5 max-h-[500px] lg:max-h-[600px]">
-                <!-- Upgrades rendered dynamically -->
-            </div>
-
-            <!-- Tab Content: Hacks / Cheats Menu -->
-            <div id="tabHacks" class="hidden flex-1 overflow-y-auto pr-1 space-y-3 max-h-[500px] lg:max-h-[600px]">
-                <div class="p-3 bg-red-950/30 border border-red-800/60 rounded-xl">
-                    <h3 class="font-game text-red-400 text-sm mb-1">
-                        <i class="fa-solid fa-shield-cat mr-1"></i> "Luca is the goat" Cheats
-                    </h3>
-                    <p class="text-xs text-red-200/70">Welcome to the secret developer options. Cheat to your heart's content!</p>
+            <div id="hacksTab" class="hidden flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
+                <div class="bg-red-950/40 border border-red-500/40 p-3 rounded-xl text-red-300">
+                    <div class="font-bold font-game text-sm mb-1 flex items-center gap-1.5 text-red-400">
+                        <i class="fa-solid fa-user-ninja"></i> Secret Goat Hack Console
+                    </div>
+                    Unlocked by setting bakery name to <strong>"Luca is the goat"</strong>!
                 </div>
 
-                <button onclick="hackAddCookies(10000000)" class="w-full bg-red-900/60 hover:bg-red-800 border border-red-700 p-3 rounded-xl font-bold text-xs text-red-100 flex items-center justify-between transition-colors">
-                    <span><i class="fa-solid fa-cookie mr-2 text-amber-400"></i> +10,000,000 Cookies</span>
-                    <span class="bg-red-950 px-2 py-1 rounded text-[10px]">EXECUTE</span>
-                </button>
-
-                <button onclick="hackAddCookies(1000000000)" class="w-full bg-red-900/60 hover:bg-red-800 border border-red-700 p-3 rounded-xl font-bold text-xs text-red-100 flex items-center justify-between transition-colors">
-                    <span><i class="fa-solid fa-vault mr-2 text-yellow-400"></i> +1,000,000,000 Cookies</span>
-                    <span class="bg-red-950 px-2 py-1 rounded text-[10px]">EXECUTE</span>
-                </button>
-
-                <button id="autoClickerToggleBtn" onclick="toggleAutoClicker()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 p-3 rounded-xl font-bold text-xs text-slate-200 flex items-center justify-between transition-colors">
-                    <span><i class="fa-solid fa-robot mr-2 text-emerald-400"></i> Auto-Clicker (100 CPS)</span>
-                    <span id="autoClickerBadge" class="bg-slate-900 text-slate-400 px-2 py-1 rounded text-[10px]">OFF</span>
-                </button>
-
-                <button id="multiplierBoostBtn" onclick="toggleMultiplierBoost()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 p-3 rounded-xl font-bold text-xs text-slate-200 flex items-center justify-between transition-colors">
-                    <span><i class="fa-solid fa-gauge-high mr-2 text-purple-400"></i> 100x Multiplier Boost</span>
-                    <span id="multiplierBadge" class="bg-slate-900 text-slate-400 px-2 py-1 rounded text-[10px]">OFF</span>
-                </button>
-
-                <button onclick="instantWin()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black p-3 rounded-xl text-xs flex items-center justify-between shadow-lg transition-transform active:scale-95">
-                    <span><i class="fa-solid fa-trophy mr-2"></i> INSTANT WIN GAME</span>
-                    <span class="bg-black/30 px-2 py-1 rounded text-[10px]">BOOM</span>
-                </button>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="hackAddCookies(1000000000)" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 border border-red-500/50 rounded-xl font-bold text-amber-400 text-left flex items-center justify-between transition-all">
+                        <span><i class="fa-solid fa-plus text-red-400 mr-2"></i> +1 Billion Cookies</span>
+                        <i class="fa-solid fa-cookie-bite"></i>
+                    </button>
+                    <button onclick="hackAddCookies(1000000000000)" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 border border-red-500/50 rounded-xl font-bold text-purple-400 text-left flex items-center justify-between transition-all">
+                        <span><i class="fa-solid fa-plus text-red-400 mr-2"></i> +1 Trillion Cookies</span>
+                        <i class="fa-solid fa-gem"></i>
+                    </button>
+                    <button id="godModeToggleBtn" onclick="hackToggleGodMode()" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 border border-red-500/50 rounded-xl font-bold text-emerald-400 text-left flex items-center justify-between transition-all">
+                        <span><i class="fa-solid fa-wand-magic-sparkles text-red-400 mr-2"></i> Toggle 1,000x God Multiplier</span>
+                        <span id="godModeStatusBadge" class="text-[10px] bg-slate-900 px-2 py-0.5 rounded text-slate-400 border border-slate-700">OFF</span>
+                    </button>
+                    <button onclick="hackMaxOutBuildings()" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 border border-red-500/50 rounded-xl font-bold text-sky-400 text-left flex items-center justify-between transition-all">
+                        <span><i class="fa-solid fa-arrow-up-right-dots text-red-400 mr-2"></i> Free 100x All Buildings</span>
+                        <i class="fa-solid fa-city"></i>
+                    </button>
+                    <button onclick="hackSpawnGoldenCookie()" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 border border-red-500/50 rounded-xl font-bold text-yellow-400 text-left flex items-center justify-between transition-all">
+                        <span><i class="fa-solid fa-star text-red-400 mr-2"></i> Spawn Golden Cookie Now</span>
+                        <i class="fa-solid fa-arrows-to-dot"></i>
+                    </button>
+                </div>
             </div>
         </section>
+
     </main>
 
-    
-    <!-- Modal: Bakery Name Change -->
-    <div id="nameModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-            <h3 class="font-game text-xl text-amber-400 mb-2"><i class="fa-solid fa-pen-nib mr-2"></i> Name Your Bakery</h3>
-            <p class="text-slate-400 text-xs mb-4">Give your bakery a legendary title. (Psst... try secret names!)</p>
-            
-            <input type="text" id="bakeryNameInput" maxlength="30" placeholder="e.g. Luca's Bakery" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-amber-300 font-bold focus:outline-none focus:border-amber-500 mb-4">
-            
-            <div class="flex justify-end gap-2">
-                <button onclick="closeNameModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:bg-slate-800">Cancel</button>
-                <button onclick="saveBakeryName()" class="px-5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow">Save Name</button>
+    <!-- PWA Install Modal -->
+    <div id="pwaInstallModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-indigo-500/60 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
+            <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto mb-3 shadow-lg">
+                <i class="fa-solid fa-mobile-screen-button"></i>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal: VIP Joke Popup -->
-    <div id="vipJokeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-2 border-yellow-500 rounded-2xl p-6 max-w-md w-full text-center shadow-2xl vip-gold-glow animate-bounce-short">
-            <div class="w-16 h-16 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-950 text-3xl shadow-lg">
-                <i class="fa-solid fa-face-laugh-wink"></i>
-            </div>
-            <h3 class="font-game text-2xl text-amber-400 mb-2">Ha ha, we're kidding!</h3>
-            <p class="text-slate-200 text-sm mb-4">
-                Did you really think we'd charge you $5.99? You get <strong class="text-yellow-400">VIP Membership FOR FREE!</strong>
-            </p>
+            <h3 class="font-game text-xl text-center text-indigo-300 mb-2">Install Standalone App</h3>
+            <p class="text-xs text-slate-300 text-center mb-4">Enjoy full-screen, offline-ready cookie baking on your mobile or desktop device!</p>
             
-            <div class="bg-slate-950/80 rounded-xl p-3 border border-yellow-500/30 text-left text-xs space-y-2 mb-6">
-                <div class="text-amber-400 font-bold uppercase tracking-wider mb-1"><i class="fa-solid fa-gift mr-1"></i> VIP Perks Unlocked:</div>
-                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Golden Cookie Glow Theme</div>
-                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> +50% Permanent Boost to Production</div>
-                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> VIP Lounge Badge</div>
+            <div id="pwaNativePromptBox" class="hidden mb-4">
+                <button onclick="triggerPWAInstallPrompt()" class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-game text-sm rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download"></i> INSTALL NOW (ONE CLICK)
+                </button>
             </div>
 
-            <button onclick="closeVipModal()" class="w-full py-3 rounded-xl font-game bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 text-sm shadow-lg">
-                AWESOME! LET'S BAKE!
+            <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-3 mb-4 max-h-60 overflow-y-auto">
+                <div class="font-bold text-indigo-400 uppercase text-[10px] tracking-wider">Manual Download Instructions:</div>
+                <div class="flex items-start gap-2.5">
+                    <i class="fa-brands fa-apple text-slate-400 text-base mt-0.5"></i>
+                    <div>
+                        <strong>iOS / Safari:</strong>
+                        <p class="text-[11px] text-slate-400">Tap the <i class="fa-solid fa-share-from-square text-sky-400"></i> Share button, then scroll down and select <strong class="text-slate-200">"Add to Home Screen"</strong>.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2.5 border-t border-slate-800/80 pt-2">
+                    <i class="fa-brands fa-android text-emerald-400 text-base mt-0.5"></i>
+                    <div>
+                        <strong>Android / Chrome:</strong>
+                        <p class="text-[11px] text-slate-400">Tap the <i class="fa-solid fa-ellipsis-vertical text-slate-300"></i> menu, then select <strong class="text-slate-200">"Install app"</strong> or <strong class="text-slate-200">"Add to Home Screen"</strong>.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2.5 border-t border-slate-800/80 pt-2">
+                    <i class="fa-solid fa-desktop text-sky-400 text-base mt-0.5"></i>
+                    <div>
+                        <strong>Windows / Mac Chrome:</strong>
+                        <p class="text-[11px] text-slate-400">Click the install icon <i class="fa-solid fa-circle-down text-indigo-400"></i> in your browser URL bar.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeModal('pwaInstallModal')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 font-bold text-slate-300 text-xs rounded-xl">
+                Close Instructions
             </button>
         </div>
     </div>
 
-    <!-- Modal: Victory / Win Screen -->
+    <!-- Exit Screen Modal -->
+    <div id="exitScreenModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-lg z-50 hidden flex flex-col items-center justify-center p-4 text-center">
+        <div class="w-20 h-20 bg-emerald-950 border-2 border-emerald-500 rounded-full flex items-center justify-center text-emerald-400 text-4xl mb-4 shadow-2xl animate-pulse">
+            <i class="fa-solid fa-floppy-disk"></i>
+        </div>
+        <h2 class="font-game text-3xl text-emerald-400 mb-2">GAME SAVED & PAUSED</h2>
+        <p class="text-xs sm:text-sm text-slate-300 mb-6 max-w-sm">
+            Your bakery state has been safely saved in browser storage. You can now close this tab safely!
+        </p>
+
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-xs text-left w-full max-w-xs space-y-1.5 mb-6">
+            <div class="flex justify-between"><span class="text-slate-400">Bakery:</span> <span id="exitModalName" class="text-amber-400 font-bold">--</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Cookies:</span> <span id="exitModalCookies" class="text-emerald-400 font-bold">--</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">CPS:</span> <span id="exitModalCPS" class="text-purple-400 font-bold">--</span></div>
+        </div>
+
+        <button onclick="resumeGameFromExit()" class="py-3 px-8 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-game text-sm rounded-xl shadow-xl transition-transform active:scale-95">
+            RESUME BAKING 🍪
+        </button>
+    </div>
+
+    <!-- Patch Notes Modal v2.8 -->
+    <div id="patchNotesModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/60 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
+            <h3 class="font-game text-xl text-amber-400 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-scroll text-amber-400"></i> What's New in v2.8
+            </h3>
+            <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-2.5 mb-4 max-h-60 overflow-y-auto">
+                <div class="flex items-start gap-2">
+                    <i class="fa-solid fa-floppy-disk text-emerald-400 mt-0.5"></i>
+                    <span><strong>Save/Load Fix:</strong> Rewritten save mechanics using key <code class="bg-slate-800 text-emerald-300 px-1 rounded">cookieClicker_v2_save</code> to guarantee lossless progress restoration!</span>
+                </div>
+                <div class="flex items-start gap-2">
+                    <i class="fa-solid fa-right-from-bracket text-sky-400 mt-0.5"></i>
+                    <span><strong>Save & Exit Button:</strong> Save your cookies and cleanly pause game execution with instant summary stats.</span>
+                </div>
+                <div class="flex items-start gap-2">
+                    <i class="fa-solid fa-mobile-screen-button text-indigo-400 mt-0.5"></i>
+                    <span><strong>PWA Standalone App:</strong> Integrated Web App Manifest & Service Worker link! Download as a native mobile app!</span>
+                </div>
+            </div>
+            <button onclick="closeModal('patchNotesModal')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 font-game text-slate-950 text-xs rounded-xl shadow-md">
+                Got It!
+            </button>
+        </div>
+    </div>
+
+    <!-- Rename Modal -->
+    <div id="nameModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative">
+            <h3 class="font-game text-xl text-amber-400 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square"></i> Rename Bakery
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">Choose a title for your bakery or enter secret code names!</p>
+            <input type="text" id="bakeryNameInput" maxlength="30" placeholder="e.g. Luca's Bakery" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 mb-4">
+            <div class="flex gap-2">
+                <button onclick="closeModal('nameModal')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-300">Cancel</button>
+                <button onclick="saveBakeryName()" class="flex-1 py-2 bg-amber-500 hover:bg-amber-400 rounded-xl text-xs font-bold text-slate-950">Save Name</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intro / Startup Screen Modal -->
+    <div id="introModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 max-w-lg w-full text-center shadow-2xl relative">
+            
+            <div class="bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-slate-950 font-black text-xs py-1.5 px-3 rounded-lg mb-4 uppercase tracking-wider animate-pulse shadow-md">
+                ⚠️ GAME IS IN DEMO MODE - THERE WILL BE GLITCHES AND BUGS ⚠️
+            </div>
+
+            <div class="w-16 h-16 bg-gradient-to-tr from-amber-500 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-950 text-3xl shadow-lg">
+                <i class="fa-solid fa-cookie-bite"></i>
+            </div>
+            <h3 class="font-game text-2xl text-amber-400 mb-1">WELCOME TO COOKIE CLICKER!</h3>
+            <p class="text-xs text-amber-200/80 mb-4">Deluxe Edition Guide & Save Data Protocol</p>
+            
+            <div class="bg-slate-950/80 p-3.5 rounded-xl border border-amber-500/30 text-left text-xs space-y-2 mb-4 max-h-52 overflow-y-auto">
+                <div class="flex items-start gap-2 text-slate-200">
+                    <i class="fa-solid fa-trophy text-amber-400 mt-0.5"></i>
+                    <span><strong>Goal:</strong> Bake <strong>6,000,000,000 (6 Billion)</strong> cookies to win!</span>
+                </div>
+                <div class="flex items-start gap-2 text-slate-200">
+                    <i class="fa-solid fa-floppy-disk text-sky-400 mt-0.5"></i>
+                    <span><strong>Save Game:</strong> Cookies, CPS, and Buildings saved cleanly under key 'cookieClicker_v2_save'!</span>
+                </div>
+                <div class="flex items-start gap-2 text-red-400 font-bold border-t border-slate-800 pt-2 mt-2">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 mt-0.5"></i>
+                    <span>CRITICAL: Wait 10s before clicking! Skipping early WIPES YOUR SAVE DATA & triggers the Penalty Wheel!</span>
+                </div>
+            </div>
+
+            <button id="introConfirmBtn" onclick="attemptConfirmModal('intro')" class="w-full py-3 rounded-xl font-game bg-slate-800 text-slate-400 text-sm shadow-lg transition-all cursor-pointer border border-slate-700">
+                Start Game (Wait 10s)
+            </button>
+        </div>
+    </div>
+
+    <!-- Save Selection Prompt Modal -->
+    <div id="savePromptModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-sky-500 rounded-2xl p-6 max-w-md w-full text-center shadow-2xl relative">
+            <div class="w-16 h-16 bg-gradient-to-tr from-sky-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 text-white text-3xl shadow-lg">
+                <i class="fa-solid fa-floppy-disk"></i>
+            </div>
+            <h3 class="font-game text-2xl text-sky-400 mb-1">SAVED GAME DETECTED!</h3>
+            <p class="text-xs text-slate-300 mb-4">We found existing bakery progress on your browser.</p>
+
+            <div class="bg-slate-950/80 p-3.5 rounded-xl border border-sky-500/30 text-left text-xs space-y-2 mb-6">
+                <div class="flex justify-between text-slate-300">
+                    <span>Saved Bakery:</span> <strong id="saveModalBakeryName" class="text-amber-400">--</strong>
+                </div>
+                <div class="flex justify-between text-slate-300">
+                    <span>Saved Cookies:</span> <strong id="saveModalCookieCount" class="text-emerald-400">--</strong>
+                </div>
+                <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-800">
+                    Note: Continuing restores Cookies & Buildings. Hacks, VIP, and Premium reset fresh each run.
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2.5">
+                <button onclick="confirmLoadSavedGame()" class="w-full py-3 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-game text-sm rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play"></i> CONTINUE SAVED GAME
+                </button>
+                <button onclick="confirmStartNewGame()" class="w-full py-2.5 bg-slate-800 hover:bg-rose-900/40 border border-slate-700 hover:border-rose-700 text-slate-300 hover:text-rose-200 font-bold text-xs rounded-xl transition-all">
+                    Start New Game (Overwrite Save)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Checkout Step 1 -->
+    <div id="premiumCheckoutModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-purple-500 rounded-2xl p-6 max-w-md w-full text-center shadow-2xl relative">
+            <div class="w-16 h-16 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-3xl shadow-lg">
+                <i class="fa-solid fa-gem"></i>
+            </div>
+            <h3 class="font-game text-2xl text-purple-300 mb-1">PREMIUM MODE UPGRADE</h3>
+            <p class="text-xs text-purple-200/70 mb-4">Unlock godlike baking superpowers for 5 minutes.</p>
+            
+            <div class="bg-slate-950/80 p-4 rounded-xl border border-purple-500/30 text-left text-xs space-y-2 mb-6">
+                <div class="flex justify-between items-center text-slate-200 border-b border-slate-800 pb-2">
+                    <span class="font-bold">Item:</span> <span>Cookie Clicker Premium Tier</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-200 border-b border-slate-800 pb-2">
+                    <span class="font-bold">Perk:</span> <span class="text-emerald-400 font-bold">+5000% Production (50x for 5 Mins)</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-200">
+                    <span class="font-bold">Total Due:</span> <span class="text-pink-400 font-black text-base">$50.00 USD</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal('premiumCheckoutModal')" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-300">Cancel</button>
+                <button onclick="proceedToCheckoutLoading()" class="flex-1 py-3 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-game text-sm rounded-xl shadow-lg active:scale-95 transition-transform">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Loading Spinner Modal (2 seconds) -->
+    <div id="premiumLoadingModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-purple-500/50 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div class="inline-block animate-spin text-purple-400 text-4xl mb-4">
+                <i class="fa-solid fa-circle-notch"></i>
+            </div>
+            <h4 class="font-game text-xl text-purple-200 mb-2">Processing Payment...</h4>
+            <p class="text-xs text-slate-400">Connecting to secure payment gateway ($50.00)...</p>
+        </div>
+    </div>
+
+    <!-- VIP Joke Modal -->
+    <div id="vipJokeModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-yellow-500 rounded-2xl p-6 max-w-md w-full text-center shadow-2xl vip-gold-glow">
+            <div class="w-16 h-16 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-950 text-3xl shadow-lg">
+                <i class="fa-solid fa-face-laugh-wink"></i>
+            </div>
+            <h3 class="font-game text-2xl text-amber-400 mb-2">HA HA! WE WERE KIDDING!</h3>
+            <p class="text-slate-200 text-sm mb-3">
+                Did you really think we'd charge you $5.99? You get <strong class="text-yellow-400 underline font-extrabold">VIP FOR 5 MINUTES FOR FREE!</strong>
+            </p>
+            
+            <div class="bg-slate-950/80 rounded-xl p-3 border border-yellow-500/30 text-left text-xs space-y-2 mb-4">
+                <div class="text-amber-400 font-bold uppercase tracking-wider mb-1"><i class="fa-solid fa-gift mr-1"></i> VIP Perks Granted:</div>
+                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> 10x Multiplier to Clicks & CPS (5 Mins)!</div>
+                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Golden Cookie Glow Visual Effect</div>
+                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Instant +500,000 Bonus Cookies!</div>
+            </div>
+
+            <div class="bg-amber-950/50 border border-amber-500/40 p-2.5 rounded-xl text-amber-300 text-[11px] mb-4">
+                <i class="fa-solid fa-triangle-exclamation mr-1 text-yellow-400"></i>
+                <strong>ATTENTION:</strong> Read completely! Attempting to skip early triggers penalty wheel!
+            </div>
+
+            <button id="vipConfirmBtn" onclick="attemptConfirmModal('vip')" class="w-full py-3 rounded-xl font-game bg-slate-700 text-slate-400 text-sm shadow-lg transition-all cursor-pointer">
+                OK (Wait 10s)
+            </button>
+        </div>
+    </div>
+
+    <!-- Premium Joke Modal -->
+    <div id="premiumJokeModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-pink-500 rounded-2xl p-6 max-w-md w-full text-center shadow-2xl premium-rainbow-glow">
+            <div class="w-16 h-16 bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-3xl shadow-lg">
+                <i class="fa-solid fa-face-grin-squint-tears"></i>
+            </div>
+            <h3 class="font-game text-2xl text-pink-400 mb-2">JUST KIDDING AGAIN!</h3>
+            <p class="text-slate-200 text-sm mb-3">
+                No $50 needed! You unlocked <strong class="text-pink-300 underline font-extrabold">PREMIUM FOR 5 MINUTES FOR FREE!</strong>
+            </p>
+            
+            <div class="bg-slate-950/80 rounded-xl p-3 border border-pink-500/30 text-left text-xs space-y-2 mb-4">
+                <div class="text-pink-400 font-bold uppercase tracking-wider mb-1"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Premium Perks Granted:</div>
+                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Massive 50x Global Multiplier (5 Mins)!</div>
+                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Rainbow Dynamic Cookie Pulse</div>
+                <div class="flex items-center text-slate-300"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Instant +50,000,000 Bonus Cookies!</div>
+            </div>
+
+            <div class="bg-pink-950/50 border border-pink-500/40 p-2.5 rounded-xl text-pink-300 text-[11px] mb-4">
+                <i class="fa-solid fa-triangle-exclamation mr-1 text-pink-400"></i>
+                <strong>WARNING:</strong> Read every line! Do not try to skip before the 10s timer expires!
+            </div>
+
+            <button id="premiumConfirmBtn" onclick="attemptConfirmModal('premium')" class="w-full py-3 rounded-xl font-game bg-slate-700 text-slate-400 text-sm shadow-lg transition-all cursor-pointer">
+                OK (Wait 10s)
+            </button>
+        </div>
+    </div>
+
+    <!-- Interactive Penalty Spinner Wheel Modal -->
+    <div id="penaltyWheelModal" class="fixed inset-0 bg-red-950/95 z-50 hidden flex flex-col items-center justify-center p-4 text-center text-white rage-shake-bg">
+        <div class="text-5xl sm:text-6xl mb-2 animate-bounce">
+            <i class="fa-solid fa-skull-crossbones text-red-500"></i>
+        </div>
+        <h2 class="font-game text-2xl sm:text-4xl tracking-wider text-red-400 drop-shadow-lg mb-1 uppercase">
+            HOW DARE YOU NOT READ MY MESSAGE!
+        </h2>
+        <p class="text-xs sm:text-sm text-yellow-300 mb-3 font-bold max-w-md">
+            You tried to skip before the 10-second timer! Spinning the Wheel of Punishment...
+        </p>
+
+        <div class="relative my-2">
+            <div class="wheel-pointer"></div>
+            <div class="wheel-container">
+                <canvas id="wheelCanvas" width="280" height="280" class="wheel-canvas"></canvas>
+            </div>
+        </div>
+
+        <div id="wheelStatusText" class="mt-3 text-sm font-game text-yellow-400 animate-pulse">
+            SPINNING PUNISHMENT WHEEL...
+        </div>
+
+        <button id="dismissPenaltyBtn" onclick="dismissPenaltyScreen()" class="hidden mt-4 py-2.5 px-6 bg-black hover:bg-slate-900 border-2 border-red-500 rounded-xl font-game text-xs sm:text-sm text-yellow-400 shadow-2xl active:scale-95 transition-transform cursor-pointer">
+            ACCEPT CONSEQUENCES 😭
+        </button>
+    </div>
+
+    <!-- Game Win Modal (6 Billion) -->
     <div id="winModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border-2 border-amber-400 rounded-2xl p-6 md:p-8 max-w-lg w-full text-center shadow-2xl relative overflow-hidden">
-            <div class="text-5xl mb-3">🏆</div>
-            <h2 class="font-game text-3xl md:text-4xl text-amber-400 mb-2">YOU CONQUERED THE COOKIE UNIVERSE!</h2>
+            <div class="text-5xl mb-3 animate-bounce">🏆</div>
+            <h2 class="font-game text-3xl md:text-4xl text-amber-400 mb-2">YOU WIN THE GAME!</h2>
             <p class="text-slate-300 text-sm mb-6">
-                You reached the ultimate goal of <strong class="text-amber-300">6,000,000,000 Cookies</strong>! Your bakery is now legendary across time and space.
+                You reached the goal of <strong class="text-amber-300 font-bold">6,000,000,000 Cookies</strong>! Your bakery is supreme.
             </p>
 
             <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800 text-left text-xs space-y-2 mb-6">
                 <div class="flex justify-between text-slate-400"><span>Bakery:</span> <strong id="winBakeryName" class="text-amber-300">--</strong></div>
-                <div class="flex justify-between text-slate-400"><span>Total Cookies Baked:</span> <strong id="winTotalCookies" class="text-emerald-400">--</strong></div>
-                <div class="flex justify-between text-slate-400"><span>Status:</span> <strong class="text-purple-400">Master Cookie God</strong></div>
+                <div class="flex justify-between text-slate-400"><span>Total Baked:</span> <strong id="winTotalCookies" class="text-emerald-400">--</strong></div>
+                <div class="flex justify-between text-slate-400"><span>Status:</span> <strong class="text-purple-400">Master Baker</strong></div>
             </div>
 
-            <button onclick="closeWinModal()" class="w-full py-3.5 rounded-xl font-game bg-amber-500 hover:bg-amber-400 text-slate-950 text-base shadow-xl transition-all">
-                CONTINUE PLAYING IN INFINITE MODE
-            </button>
+            <div class="flex gap-3">
+                <button onclick="closeModal('winModal')" class="flex-1 py-3 rounded-xl font-game bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm transition-all">
+                    Keep Playing
+                </button>
+                <button onclick="resetGamePrompt()" class="flex-1 py-3 rounded-xl font-game bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm transition-all">
+                    Restart Fresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 bg-slate-900 border-2 border-amber-500 text-amber-300 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <i id="toastIcon" class="fa-solid fa-clock text-xl text-amber-400"></i>
+        <div>
+            <div id="toastTitle" class="font-game text-sm text-white">Notification</div>
+            <div id="toastBody" class="text-xs text-slate-300">Message content goes here.</div>
         </div>
     </div>
 
     <script>
-        // --- GAME STATE ---
-        const WIN_GOAL = 6000000000; // 6 Billion
+        const WIN_GOAL = 6000000000;
+        const SAVE_KEY = "cookieClicker_v2_save"; // Updated unique save key for v2.8
+        const DURATION_5_MINS = 300; // 5 minutes in seconds
+
+        const initialBuildings = {
+            cursor: { count: 0, cost: 15, cps: 0.1, name: "Cursor", icon: "fa-hand-pointer" },
+            grandma: { count: 0, cost: 100, cps: 1, name: "Grandma", icon: "fa-user-ninja" },
+            farm: { count: 0, cost: 1100, cps: 8, name: "Cookie Farm", icon: "fa-wheat-awn" },
+            mine: { count: 0, cost: 12000, cps: 47, name: "Cookie Mine", icon: "fa-pickaxe" },
+            factory: { count: 0, cost: 130000, cps: 260, name: "Cookie Factory", icon: "fa-industry" },
+            bank: { count: 0, cost: 1400000, cps: 1400, name: "Cookie Bank", icon: "fa-piggy-bank" },
+            temple: { count: 0, cost: 20000000, cps: 7800, name: "Cookie Temple", icon: "fa-gopuram" },
+            wizard: { count: 0, cost: 330000000, cps: 44000, name: "Wizard Tower", icon: "fa-hat-wizard" }
+        };
+
+        const initialUpgrades = {
+            click1: { bought: false, cost: 100, name: "Reinforced Index", desc: "Clicking is 2x as powerful", icon: "fa-hand", type: "click", multiplier: 2 },
+            click2: { bought: false, cost: 1000, name: "Ambidextrous", desc: "Clicking is 3x as powerful", icon: "fa-hands-clapping", type: "click", multiplier: 3 },
+            click3: { bought: false, cost: 50000, name: "Auto Clicker X", desc: "Clicking power scaled by +5%", icon: "fa-bolt", type: "click", multiplier: 5 },
+            grandma1: { bought: false, cost: 500, name: "Rolling Pins", desc: "Grandmas are 2x as efficient", icon: "fa-utensils", type: "building", target: "grandma", multiplier: 2 },
+            grandma2: { bought: false, cost: 2500, name: "Coffee Grandmas", desc: "Grandmas are 3x as fast!", icon: "fa-mug-hot", type: "building", target: "grandma", multiplier: 3 },
+            farm1: { bought: false, cost: 5500, name: "Cheap Fertilizer", desc: "Farms are 2x as efficient", icon: "fa-seedling", type: "building", target: "farm", multiplier: 2 },
+            factory1: { bought: false, cost: 500000, name: "Steam Engines", desc: "Factories are 2x as efficient", icon: "fa-gear", type: "building", target: "factory", multiplier: 2 },
+            factory2: { bought: false, cost: 10000000, name: "Quantum Ovens", desc: "Factories are 4x as efficient", icon: "fa-atom", type: "building", target: "factory", multiplier: 4 },
+            golden1: { bought: false, cost: 25000, name: "Golden Switches", desc: "Golden cookies appear twice as fast", icon: "fa-toggle-on", type: "special", multiplier: 1.5 }
+        };
+
+        // State definition
         let gameState = {
             cookies: 0,
             totalBaked: 0,
             bakeryName: "Luca's Bakery",
             isVip: false,
+            vipTimeRemaining: 0,
+            isPremium: false,
+            premiumTimeRemaining: 0,
+            permanentBuffDown: false,
             hacksUnlocked: false,
-            multiplierBoost: false,
-            autoClicker: false,
+            godMode: false,
             hasWon: false,
-            buildings: {
-                cursor: { count: 0, cost: 15, cps: 0.1, name: "Cursor", icon: "fa-hand-pointer" },
-                grandma: { count: 0, cost: 100, cps: 1, name: "Grandma", icon: "fa-user-ninja" },
-                farm: { count: 0, cost: 1100, cps: 8, name: "Cookie Farm", icon: "fa-wheat-awn" },
-                bakery: { count: 0, cost: 12000, cps: 47, name: "Bakery", icon: "fa-store" },
-                factory: { count: 0, cost: 130000, cps: 260, name: "Cookie Factory", icon: "fa-industry" },
-                goldenOven: { count: 0, cost: 1400000, cps: 1400, name: "Golden Oven", icon: "fa-fire" },
-                alchemy: { count: 0, cost: 20000000, cps: 7800, name: "Alchemy Lab", icon: "fa-flask" },
-                quantum: { count: 0, cost: 330000000, cps: 44000, name: "Quantum Bakery", icon: "fa-atom" }
-            },
-            upgrades: {
-                click1: { bought: false, cost: 100, name: "Reinforced Index", desc: "Clicking is 2x as powerful", icon: "fa-hand", type: "click", multiplier: 2 },
-                click2: { bought: false, cost: 1000, name: "Ambidextrous", desc: "Clicking is 3x as powerful", icon: "fa-hands-clapping", type: "click", multiplier: 3 },
-                grandma1: { bought: false, cost: 500, name: "Forky Rolling Pins", desc: "Grandmas are 2x as efficient", icon: "fa-utensils", type: "building", target: "grandma", multiplier: 2 },
-                farm1: { bought: false, cost: 5500, name: "Cheap Fertilizer", desc: "Farms are 2x as efficient", icon: "fa-seedling", type: "building", target: "farm", multiplier: 2 }
-            }
+            buildings: JSON.parse(JSON.stringify(initialBuildings)),
+            upgrades: JSON.parse(JSON.stringify(initialUpgrades))
         };
 
+        let tempPendingSave = null; 
         let soundEnabled = true;
         let audioCtx = null;
-        let autoClickerInterval = null;
+        let currentTab = 'buildings';
+        let currentModalContext = 'intro';
+        let deferredPwaPrompt = null;
+
+        let modalTimers = {
+            intro: { secondsLeft: 10, interval: null, safeToClick: false },
+            vip: { secondsLeft: 10, interval: null, safeToClick: false },
+            premium: { secondsLeft: 10, interval: null, safeToClick: false }
+        };
+
+        // Register dummy service worker for PWA capability
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `self.addEventListener('fetch', function(e) { e.respondWith(fetch(e.request)); });`;
+                const blob = new Blob([swCode], { type: 'text/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(() => {});
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPwaPrompt = e;
+            document.getElementById('pwaNativePromptBox').classList.remove('hidden');
+        });
+
+        function triggerPWAInstallPrompt() {
+            if (deferredPwaPrompt) {
+                deferredPwaPrompt.prompt();
+                deferredPwaPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast("Installing App!", "Thank you for installing Cookie Clicker!");
+                    }
+                    deferredPwaPrompt = null;
+                });
+            }
+        }
+
+        function openInstallModal() {
+            playSound('click');
+            document.getElementById('pwaInstallModal').classList.remove('hidden');
+        }
+
+        function formatNumber(num) {
+            const isNegative = num < 0;
+            const absNum = Math.abs(num);
+            let formatted = "";
+
+            if (absNum >= 1e12) formatted = (absNum / 1e12).toFixed(2) + " Trillion";
+            else if (absNum >= 1e9) formatted = (absNum / 1e9).toFixed(2) + " Billion";
+            else if (absNum >= 1e6) formatted = (absNum / 1e6).toFixed(2) + " Million";
+            else if (absNum >= 1e3) formatted = (absNum / 1e3).toFixed(1) + "k";
+            else formatted = Math.floor(absNum).toLocaleString();
+
+            return isNegative ? `-${formatted}` : formatted;
+        }
+
+        function formatTimerSeconds(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = Math.floor(totalSeconds % 60);
+            return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        }
 
         function playSound(type) {
             if (!soundEnabled) return;
@@ -382,426 +815,825 @@
 
                 if (type === 'click') {
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(300, now);
-                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.05);
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
                     gain.gain.setValueAtTime(0.15, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
                     osc.start(now);
                     osc.stop(now + 0.05);
                 } else if (type === 'buy') {
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(440, now);
-                    osc.frequency.setValueAtTime(880, now + 0.08);
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.12);
                     gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
                     osc.start(now);
-                    osc.stop(now + 0.2);
+                    osc.stop(now + 0.12);
+                } else if (type === 'save') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.18);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+                    osc.start(now);
+                    osc.stop(now + 0.18);
+                } else if (type === 'golden') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.25);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
                 } else if (type === 'win') {
                     osc.type = 'square';
-                    osc.frequency.setValueAtTime(523.25, now); // C5
-                    osc.frequency.setValueAtTime(659.25, now + 0.15); // E5
-                    osc.frequency.setValueAtTime(783.99, now + 0.3); // G5
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
                     gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
                     osc.start(now);
-                    osc.stop(now + 0.6);
+                    osc.stop(now + 0.4);
+                } else if (type === 'alarm') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(850, now + 0.15);
+                    osc.frequency.linearRampToValueAtTime(180, now + 0.3);
+                    gain.gain.setValueAtTime(0.35, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+                    osc.start(now);
+                    osc.stop(now + 0.45);
+                } else if (type === 'expire') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.linearRampToValueAtTime(200, now + 0.3);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
                 }
-            } catch (e) {
-                console.error("Audio error:", e);
-            }
+            } catch (e) {}
         }
 
         function toggleSound() {
             soundEnabled = !soundEnabled;
             const icon = document.getElementById('soundIcon');
-            if (soundEnabled) {
-                icon.className = 'fa-solid fa-volume-high text-lg';
-            } else {
-                icon.className = 'fa-solid fa-volume-xmark text-lg text-slate-500';
-            }
+            icon.className = soundEnabled ? "fa-solid fa-volume-high text-base text-amber-400" : "fa-solid fa-volume-xmark text-base text-slate-500";
+        }
+
+        function showToast(title, body) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastBody').innerText = body;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 4000);
+        }
+
+        function openPatchNotesModal() {
+            playSound('click');
+            document.getElementById('patchNotesModal').classList.remove('hidden');
+        }
+
+        function saveAndExitGame() {
+            saveGame();
+            playSound('save');
+            document.getElementById('exitModalName').innerText = gameState.bakeryName;
+            document.getElementById('exitModalCookies').innerText = formatNumber(gameState.cookies);
+            document.getElementById('exitModalCPS').innerText = formatNumber(getCPS());
+            document.getElementById('exitScreenModal').classList.remove('hidden');
+        }
+
+        function resumeGameFromExit() {
+            playSound('click');
+            document.getElementById('exitScreenModal').classList.add('hidden');
         }
 
         function getCPC() {
-            let baseCPC = 1;
-            if (gameState.upgrades.click1.bought) baseCPC *= gameState.upgrades.click1.multiplier;
-            if (gameState.upgrades.click2.bought) baseCPC *= gameState.upgrades.click2.multiplier;
-            
-            // Add building contribution to click power (1% of CPS per cursor)
-            baseCPC += (getCPS() * 0.01);
+            let cpc = 1;
+            if (gameState.upgrades.click1 && gameState.upgrades.click1.bought) cpc *= gameState.upgrades.click1.multiplier;
+            if (gameState.upgrades.click2 && gameState.upgrades.click2.bought) cpc *= gameState.upgrades.click2.multiplier;
+            if (gameState.upgrades.click3 && gameState.upgrades.click3.bought) cpc *= gameState.upgrades.click3.multiplier;
 
-            let vipMult = gameState.isVip ? 1.5 : 1.0;
-            let hackMult = gameState.multiplierBoost ? 100 : 1.0;
+            cpc += (getCPS() * 0.01);
 
-            return Math.max(1, baseCPC * vipMult * hackMult);
+            let vipMult = gameState.isVip ? 10 : 1.0;
+            let premiumMult = gameState.isPremium ? 50 : 1.0;
+            let godMult = gameState.godMode ? 1000 : 1.0;
+
+            return Math.max(1, cpc * vipMult * premiumMult * godMult);
         }
 
         function getCPS() {
             let totalCPS = 0;
 
-            let grandmaMult = gameState.upgrades.grandma1.bought ? 2 : 1;
-            let farmMult = gameState.upgrades.farm1.bought ? 2 : 1;
+            let grandmaMult = 1;
+            if (gameState.upgrades.grandma1 && gameState.upgrades.grandma1.bought) grandmaMult *= gameState.upgrades.grandma1.multiplier;
+            if (gameState.upgrades.grandma2 && gameState.upgrades.grandma2.bought) grandmaMult *= gameState.upgrades.grandma2.multiplier;
 
-            totalCPS += gameState.buildings.cursor.count * gameState.buildings.cursor.cps;
-            totalCPS += gameState.buildings.grandma.count * gameState.buildings.grandma.cps * grandmaMult;
-            totalCPS += gameState.buildings.farm.count * gameState.buildings.farm.cps * farmMult;
-            totalCPS += gameState.buildings.bakery.count * gameState.buildings.bakery.cps;
-            totalCPS += gameState.buildings.factory.count * gameState.buildings.factory.cps;
-            totalCPS += gameState.buildings.goldenOven.count * gameState.buildings.goldenOven.cps;
-            totalCPS += gameState.buildings.alchemy.count * gameState.buildings.alchemy.cps;
-            totalCPS += gameState.buildings.quantum.count * gameState.buildings.quantum.cps;
+            let farmMult = (gameState.upgrades.farm1 && gameState.upgrades.farm1.bought) ? 2 : 1;
 
-            let vipMult = gameState.isVip ? 1.5 : 1.0;
-            let hackMult = gameState.multiplierBoost ? 100 : 1.0;
+            let factoryMult = 1;
+            if (gameState.upgrades.factory1 && gameState.upgrades.factory1.bought) factoryMult *= gameState.upgrades.factory1.multiplier;
+            if (gameState.upgrades.factory2 && gameState.upgrades.factory2.bought) factoryMult *= gameState.upgrades.factory2.multiplier;
 
-            return totalCPS * vipMult * hackMult;
+            if (gameState.buildings.cursor) totalCPS += gameState.buildings.cursor.count * gameState.buildings.cursor.cps;
+            if (gameState.buildings.grandma) totalCPS += gameState.buildings.grandma.count * gameState.buildings.grandma.cps * grandmaMult;
+            if (gameState.buildings.farm) totalCPS += gameState.buildings.farm.count * gameState.buildings.farm.cps * farmMult;
+            if (gameState.buildings.mine) totalCPS += gameState.buildings.mine.count * gameState.buildings.mine.cps;
+            if (gameState.buildings.factory) totalCPS += gameState.buildings.factory.count * gameState.buildings.factory.cps * factoryMult;
+            if (gameState.buildings.bank) totalCPS += gameState.buildings.bank.count * gameState.buildings.bank.cps;
+            if (gameState.buildings.temple) totalCPS += gameState.buildings.temple.count * gameState.buildings.temple.cps;
+            if (gameState.buildings.wizard) totalCPS += gameState.buildings.wizard.count * gameState.buildings.wizard.cps;
+
+            let vipMult = gameState.isVip ? 10 : 1.0;
+            let premiumMult = gameState.isPremium ? 50 : 1.0;
+            let godMult = gameState.godMode ? 1000 : 1.0;
+
+            return totalCPS * vipMult * premiumMult * godMult;
         }
 
         function clickCookie(event) {
+            const gained = getCPC();
+            gameState.cookies += gained;
+            if (gained > 0) gameState.totalBaked += gained;
+
             playSound('click');
-            const cpc = getCPC();
-            gameState.cookies += cpc;
-            gameState.totalBaked += cpc;
-
-            // Trigger floating text animation at click coordinates
-            createFloatingNumber(event, `+${formatNumber(cpc)}`);
-
+            createFloatingNumber(event, `+${formatNumber(gained)}`);
             checkWinCondition();
             updateUI();
         }
 
         function createFloatingNumber(event, text) {
-            const container = document.getElementById('floatingLayer');
-            const num = document.createElement('div');
-            num.className = 'floating-num text-amber-300 text-xl font-bold';
-            num.innerText = text;
+            const container = document.getElementById('clickContainer');
+            if (!container) return;
 
-            // Position relative to click or random if auto-clicked
-            let x, y;
+            const rect = container.getBoundingClientRect();
+            let x = rect.width / 2;
+            let y = rect.height / 2;
+
             if (event && event.clientX) {
-                const rect = container.getBoundingClientRect();
-                x = event.clientX - rect.left - 15;
-                y = event.clientY - rect.top - 20;
-            } else {
-                x = Math.random() * 120 + 40;
-                y = Math.random() * 120 + 40;
+                x = event.clientX - rect.left;
+                y = event.clientY - rect.top;
             }
 
-            num.style.left = `${x}px`;
-            num.style.top = `${y}px`;
+            const numEl = document.createElement('div');
+            numEl.className = 'floating-num text-amber-300 font-bold text-lg pointer-events-none';
+            numEl.innerText = text;
+            numEl.style.left = `${x + (Math.random() * 20 - 10)}px`;
+            numEl.style.top = `${y + (Math.random() * 20 - 10)}px`;
 
-            container.appendChild(num);
-
-            setTimeout(() => {
-                num.remove();
-            }, 800);
-        }
-
-        function openNameModal() {
-            document.getElementById('bakeryNameInput').value = gameState.bakeryName;
-            document.getElementById('nameModal').classList.remove('hidden');
-        }
-
-        function closeNameModal() {
-            document.getElementById('nameModal').classList.add('hidden');
-        }
-
-        function saveBakeryName() {
-            const input = document.getElementById('bakeryNameInput').value.trim();
-            if (input.length > 0) {
-                gameState.bakeryName = input;
-                checkCheatCode(input);
-                updateUI();
-            }
-            closeNameModal();
-        }
-
-        function checkCheatCode(name) {
-            if (name.toLowerCase() === "luca is the goat") {
-                if (!gameState.hacksUnlocked) {
-                    gameState.hacksUnlocked = true;
-                    document.getElementById('tabHacksBtn').classList.remove('hidden');
-                    document.getElementById('hackUnlockedBanner').classList.remove('hidden');
-                    playSound('buy');
-                }
-            }
-        }
-
-        function buyVIP() {
-            document.getElementById('vipJokeModal').classList.remove('hidden');
-        }
-
-        function closeVipModal() {
-            document.getElementById('vipJokeModal').classList.add('hidden');
-            if (!gameState.isVip) {
-                gameState.isVip = true;
-                playSound('win');
-                updateUI();
-            }
-        }
-
-        function hackAddCookies(amount) {
-            gameState.cookies += amount;
-            gameState.totalBaked += amount;
-            playSound('buy');
-            checkWinCondition();
-            updateUI();
-        }
-
-        function toggleAutoClicker() {
-            gameState.autoClicker = !gameState.autoClicker;
-            const badge = document.getElementById('autoClickerBadge');
-            
-            if (gameState.autoClicker) {
-                badge.innerText = "ACTIVE (100 CPS)";
-                badge.className = "bg-emerald-900 text-emerald-300 px-2 py-1 rounded text-[10px]";
-                autoClickerInterval = setInterval(() => {
-                    clickCookie(null);
-                }, 10); // 100 clicks per sec
-            } else {
-                badge.innerText = "OFF";
-                badge.className = "bg-slate-900 text-slate-400 px-2 py-1 rounded text-[10px]";
-                clearInterval(autoClickerInterval);
-            }
-        }
-
-        function toggleMultiplierBoost() {
-            gameState.multiplierBoost = !gameState.multiplierBoost;
-            const badge = document.getElementById('multiplierBadge');
-            if (gameState.multiplierBoost) {
-                badge.innerText = "100x ACTIVE";
-                badge.className = "bg-purple-900 text-purple-300 px-2 py-1 rounded text-[10px]";
-            } else {
-                badge.innerText = "OFF";
-                badge.className = "bg-slate-900 text-slate-400 px-2 py-1 rounded text-[10px]";
-            }
-            updateUI();
-        }
-
-        function instantWin() {
-            gameState.cookies = WIN_GOAL;
-            gameState.totalBaked = Math.max(gameState.totalBaked, WIN_GOAL);
-            checkWinCondition();
-            updateUI();
+            container.appendChild(numEl);
+            setTimeout(() => numEl.remove(), 850);
         }
 
         function buyBuilding(key) {
-            const bld = gameState.buildings[key];
-            if (gameState.cookies >= bld.cost) {
-                gameState.cookies -= bld.cost;
-                bld.count++;
-                bld.cost = Math.floor(bld.cost * 1.15); // Scale cost by 15%
+            const b = gameState.buildings[key];
+            if (!b) return;
+
+            if (gameState.cookies >= b.cost) {
+                gameState.cookies -= b.cost;
+                b.count++;
+                b.cost = Math.floor(b.cost * 1.15);
                 playSound('buy');
                 updateUI();
             }
         }
 
         function buyUpgrade(key) {
-            const upg = gameState.upgrades[key];
-            if (!upg.bought && gameState.cookies >= upg.cost) {
-                gameState.cookies -= upg.cost;
-                upg.bought = true;
+            const u = gameState.upgrades[key];
+            if (!u || u.bought) return;
+
+            if (gameState.cookies >= u.cost) {
+                gameState.cookies -= u.cost;
+                u.bought = true;
                 playSound('buy');
                 updateUI();
             }
         }
 
-        function checkWinCondition() {
-            if (!gameState.hasWon && gameState.cookies >= WIN_GOAL) {
-                gameState.hasWon = true;
-                playSound('win');
-                showWinModal();
-                confetti({
-                    particleCount: 150,
-                    spread: 80,
-                    origin: { y: 0.6 }
-                });
-            }
-        }
+        function renderBuildings() {
+            const container = document.getElementById('buildingsTab');
+            if (!container) return;
 
-        function showWinModal() {
-            document.getElementById('winBakeryName').innerText = gameState.bakeryName;
-            document.getElementById('winTotalCookies').innerText = formatNumber(Math.floor(gameState.totalBaked));
-            document.getElementById('winModal').classList.remove('hidden');
-        }
-
-        function closeWinModal() {
-            document.getElementById('winModal').classList.add('hidden');
-        }
-
-        function switchTab(tab) {
-            document.getElementById('tabShop').classList.add('hidden');
-            document.getElementById('tabUpgrades').classList.add('hidden');
-            document.getElementById('tabHacks').classList.add('hidden');
-
-            document.getElementById('tabShopBtn').className = "flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-slate-800 text-slate-300 hover:bg-slate-700";
-            document.getElementById('tabUpgradesBtn').className = "flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-slate-800 text-slate-300 hover:bg-slate-700";
-            document.getElementById('tabHacksBtn').className = "flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-red-950/40 border border-red-800 text-red-300 hover:bg-red-900/50";
-
-            if (tab === 'shop') {
-                document.getElementById('tabShop').classList.remove('hidden');
-                document.getElementById('tabShopBtn').className = "flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-amber-500 text-slate-950 shadow";
-            } else if (tab === 'upgrades') {
-                document.getElementById('tabUpgrades').classList.remove('hidden');
-                document.getElementById('tabUpgradesBtn').className = "flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-amber-500 text-slate-950 shadow";
-            } else if (tab === 'hacks') {
-                document.getElementById('tabHacks').classList.remove('hidden');
-                document.getElementById('tabHacksBtn').className = "flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-red-600 text-white shadow";
-            }
-        }
-
-        function renderShop() {
-            const shopContainer = document.getElementById('tabShop');
-            shopContainer.innerHTML = '';
-
-            Object.keys(gameState.buildings).forEach(key => {
-                const bld = gameState.buildings[key];
-                const canAfford = gameState.cookies >= bld.cost;
-
-                const card = document.createElement('button');
-                card.onclick = () => buyBuilding(key);
-                card.className = `w-full p-3 rounded-xl border flex items-center justify-between text-left transition-all ${
-                    canAfford ? 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 cursor-pointer' : 'bg-slate-900/40 border-slate-800/60 opacity-60'
-                }`;
-
-                card.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
-                            <i class="fa-solid ${bld.icon}"></i>
+            container.innerHTML = Object.keys(gameState.buildings).map(key => {
+                const b = gameState.buildings[key];
+                const canAfford = gameState.cookies >= b.cost;
+                return `
+                    <button onclick="buyBuilding('${key}')" ${!canAfford ? 'disabled' : ''} class="w-full p-2.5 rounded-xl border ${canAfford ? 'bg-slate-800/90 border-slate-700 hover:border-amber-500 hover:bg-slate-700' : 'bg-slate-900/40 border-slate-800/60 opacity-60 cursor-not-allowed'} transition-all flex items-center justify-between text-left group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-slate-950 flex items-center justify-center text-amber-400 text-lg border border-slate-800">
+                                <i class="fa-solid ${b.icon}"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold text-xs text-slate-200 group-hover:text-amber-400 transition-colors">${b.name}</div>
+                                <div class="text-[10px] text-emerald-400">+${formatNumber(b.cps)} CPS each</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="font-bold text-xs sm:text-sm text-slate-200">${bld.name}</div>
-                            <div class="text-[11px] text-slate-400">+${formatNumber(bld.cps)} CPS each</div>
+                        <div class="text-right">
+                            <div class="font-game text-xs text-amber-400">${formatNumber(b.cost)}</div>
+                            <div class="text-[10px] text-slate-400 font-semibold">Owned: <span class="text-white">${b.count}</span></div>
                         </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="font-game text-xs sm:text-sm ${canAfford ? 'text-amber-400' : 'text-slate-500'}">
-                            <i class="fa-solid fa-cookie mr-1"></i>${formatNumber(bld.cost)}
-                        </div>
-                        <div class="text-[10px] text-slate-400 font-semibold">Owned: ${bld.count}</div>
-                    </div>
+                    </button>
                 `;
-                shopContainer.appendChild(card);
-            });
+            }).join('');
         }
 
         function renderUpgrades() {
-            const upgradesContainer = document.getElementById('tabUpgrades');
-            upgradesContainer.innerHTML = '';
+            const container = document.getElementById('upgradesTab');
+            if (!container) return;
 
-            Object.keys(gameState.upgrades).forEach(key => {
-                const upg = gameState.upgrades[key];
-                if (upg.bought) return; // Hide bought upgrades
+            const remaining = Object.keys(gameState.upgrades).filter(k => !gameState.upgrades[k].bought);
 
-                const canAfford = gameState.cookies >= upg.cost;
+            if (remaining.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500 font-semibold"><i class="fa-solid fa-check-double text-emerald-400 text-lg block mb-1"></i> All Upgrades Purchased!</div>`;
+                return;
+            }
 
-                const card = document.createElement('button');
-                card.onclick = () => buyUpgrade(key);
-                card.className = `w-full p-3 rounded-xl border flex items-center justify-between text-left transition-all ${
-                    canAfford ? 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 cursor-pointer' : 'bg-slate-900/40 border-slate-800/60 opacity-60'
-                }`;
-
-                card.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-lg">
-                            <i class="fa-solid ${upg.icon}"></i>
+            container.innerHTML = remaining.map(key => {
+                const u = gameState.upgrades[key];
+                const canAfford = gameState.cookies >= u.cost;
+                return `
+                    <button onclick="buyUpgrade('${key}')" ${!canAfford ? 'disabled' : ''} class="w-full p-2.5 rounded-xl border ${canAfford ? 'bg-slate-800/90 border-slate-700 hover:border-amber-500 hover:bg-slate-700' : 'bg-slate-900/40 border-slate-800/60 opacity-60 cursor-not-allowed'} transition-all flex items-center justify-between text-left group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-slate-950 flex items-center justify-center text-amber-400 text-lg border border-slate-800">
+                                <i class="fa-solid ${u.icon}"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold text-xs text-slate-200 group-hover:text-amber-400 transition-colors">${u.name}</div>
+                                <div class="text-[10px] text-slate-400">${u.desc}</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="font-bold text-xs sm:text-sm text-slate-200">${upg.name}</div>
-                            <div class="text-[10px] text-slate-400">${upg.desc}</div>
+                        <div class="text-right">
+                            <div class="font-game text-xs text-amber-400">${formatNumber(u.cost)}</div>
+                            <div class="text-[10px] text-emerald-400 font-bold">Buy</div>
                         </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="font-game text-xs sm:text-sm ${canAfford ? 'text-amber-400' : 'text-slate-500'}">
-                            <i class="fa-solid fa-cookie mr-1"></i>${formatNumber(upg.cost)}
-                        </div>
-                    </div>
+                    </button>
                 `;
-                upgradesContainer.appendChild(card);
+            }).join('');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('buildingsTab').classList.toggle('hidden', tab !== 'buildings');
+            document.getElementById('upgradesTab').classList.toggle('hidden', tab !== 'upgrades');
+            document.getElementById('hacksTab').classList.toggle('hidden', tab !== 'hacks');
+
+            document.getElementById('tabBuildingsBtn').className = tab === 'buildings' ? "flex-1 py-2 text-xs font-bold font-game border-b-2 border-amber-500 text-amber-400 flex items-center justify-center gap-1.5 transition-colors" : "flex-1 py-2 text-xs font-bold font-game border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition-colors";
+            document.getElementById('tabUpgradesBtn').className = tab === 'upgrades' ? "flex-1 py-2 text-xs font-bold font-game border-b-2 border-amber-500 text-amber-400 flex items-center justify-center gap-1.5 transition-colors" : "flex-1 py-2 text-xs font-bold font-game border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition-colors";
+            document.getElementById('tabHacksBtn').className = tab === 'hacks' ? "flex-1 py-2 text-xs font-bold font-game border-b-2 border-red-500 text-red-400 flex items-center justify-center gap-1.5 transition-colors animate-pulse" : "hidden flex-1 py-2 text-xs font-bold font-game border-b-2 border-transparent text-red-400 hover:text-red-300 flex items-center justify-center gap-1.5 transition-colors animate-pulse";
+            
+            if (gameState.hacksUnlocked) {
+                document.getElementById('tabHacksBtn').classList.remove('hidden');
+            }
+        }
+
+        function openNameModal() {
+            playSound('click');
+            document.getElementById('bakeryNameInput').value = gameState.bakeryName;
+            document.getElementById('nameModal').classList.remove('hidden');
+        }
+
+        function saveBakeryName() {
+            const input = document.getElementById('bakeryNameInput').value.trim();
+            if (input) {
+                gameState.bakeryName = input;
+
+                if (input.toLowerCase() === "luca is the goat") {
+                    gameState.hacksUnlocked = true;
+                    playSound('win');
+                    switchTab('hacks');
+                }
+            }
+            closeModal('nameModal');
+            updateUI();
+        }
+
+        function hackAddCookies(amount) {
+            gameState.cookies += amount;
+            if (amount > 0) gameState.totalBaked += amount;
+            playSound('golden');
+            checkWinCondition();
+            updateUI();
+        }
+
+        function hackToggleGodMode() {
+            gameState.godMode = !gameState.godMode;
+            playSound('golden');
+            updateUI();
+        }
+
+        function hackMaxOutBuildings() {
+            Object.keys(gameState.buildings).forEach(k => {
+                gameState.buildings[k].count += 100;
             });
-
-            if (upgradesContainer.children.length === 0) {
-                upgradesContainer.innerHTML = `<div class="text-center text-xs text-slate-500 py-8">All upgrades purchased! You're maxed out!</div>`;
-            }
+            playSound('golden');
+            updateUI();
         }
 
-        function updateUI() {
-            document.getElementById('cookieCountDisplay').innerText = formatNumber(Math.floor(gameState.cookies));
-            document.getElementById('cpcDisplay').innerText = formatNumber(getCPC());
-            document.getElementById('cpsDisplay').innerText = formatNumber(getCPS());
-            document.getElementById('totalBakedDisplay').innerText = formatNumber(Math.floor(gameState.totalBaked));
-            document.getElementById('bakeryNameDisplay').innerText = gameState.bakeryName;
-
-            // Update win progress bar
-            const pct = Math.min(100, (gameState.cookies / WIN_GOAL) * 100);
-            document.getElementById('winProgressBar').style.width = `${pct}%`;
-
-            // VIP Styling
-            if (gameState.isVip) {
-                document.getElementById('vipBadge').classList.remove('hidden');
-                document.getElementById('vipSidebarCard').classList.remove('hidden');
-                document.getElementById('vipBuyBtn').className = "hidden";
-                document.getElementById('cookieSvg').classList.add('vip-gold-glow');
-            }
-
-            renderShop();
-            renderUpgrades();
-            saveGame();
+        function hackSpawnGoldenCookie() {
+            spawnGoldenCookie();
+            playSound('golden');
         }
 
-        function formatNumber(num) {
-            if (num >= 1e12) return (num / 1e12).toFixed(2) + ' T';
-            if (num >= 1e9) return (num / 1e9).toFixed(2) + ' B';
-            if (num >= 1e6) return (num / 1e6).toFixed(2) + ' M';
-            if (num >= 1e3) return (num / 1e3).toFixed(1) + ' k';
-            return Number(num).toLocaleString('en-US', { maximumFractionDigits: 1 });
+        function openIntroModal() {
+            playSound('click');
+            currentModalContext = 'intro';
+            document.getElementById('introModal').classList.remove('hidden');
+            startModalTimer('intro');
         }
 
-        setInterval(() => {
-            const cps = getCPS();
-            if (cps > 0) {
-                const add = cps / 10;
-                gameState.cookies += add;
-                gameState.totalBaked += add;
-                checkWinCondition();
+        function buyVIP() {
+            if (gameState.permanentBuffDown) return;
+            playSound('win');
+            currentModalContext = 'vip';
+            document.getElementById('vipJokeModal').classList.remove('hidden');
+            startModalTimer('vip');
+        }
+
+        function startPremiumPurchase() {
+            if (gameState.permanentBuffDown) return;
+            playSound('click');
+            document.getElementById('premiumCheckoutModal').classList.remove('hidden');
+        }
+
+        function proceedToCheckoutLoading() {
+            closeModal('premiumCheckoutModal');
+            document.getElementById('premiumLoadingModal').classList.remove('hidden');
+
+            setTimeout(() => {
+                document.getElementById('premiumLoadingModal').classList.add('hidden');
+                document.getElementById('premiumJokeModal').classList.remove('hidden');
+                playSound('win');
+                currentModalContext = 'premium';
+                startModalTimer('premium');
+            }, 2000);
+        }
+
+        function startModalTimer(type) {
+            const timerObj = modalTimers[type];
+            if (timerObj.interval) clearInterval(timerObj.interval);
+
+            timerObj.secondsLeft = 10;
+            timerObj.safeToClick = false;
+
+            let btnId = 'introConfirmBtn';
+            if (type === 'vip') btnId = 'vipConfirmBtn';
+            if (type === 'premium') btnId = 'premiumConfirmBtn';
+
+            const btn = document.getElementById(btnId);
+            btn.className = "w-full py-3 rounded-xl font-game bg-slate-800 text-slate-400 text-sm shadow-lg transition-all cursor-pointer border border-slate-700";
+            btn.innerText = type === 'intro' ? `Start Game (Wait ${timerObj.secondsLeft}s)` : `OK (Wait ${timerObj.secondsLeft}s)`;
+
+            timerObj.interval = setInterval(() => {
+                timerObj.secondsLeft--;
+                if (timerObj.secondsLeft > 0) {
+                    btn.innerText = type === 'intro' ? `Start Game (Wait ${timerObj.secondsLeft}s)` : `OK (Wait ${timerObj.secondsLeft}s)`;
+                } else {
+                    clearInterval(timerObj.interval);
+                    timerObj.safeToClick = true;
+                    btn.innerText = type === 'intro' ? "START BAKING NOW! 🍪" : "OK / CLAIM NOW! 🚀";
+                    btn.className = "w-full py-3 rounded-xl font-game bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 text-sm shadow-lg transition-transform active:scale-95 cursor-pointer animate-bounce";
+                }
+            }, 1000);
+        }
+
+        function attemptConfirmModal(type) {
+            const timerObj = modalTimers[type];
+
+            if (!timerObj.safeToClick) {
+                // PUNISHMENT: USER SKIPPED TIMER EARLY!
+                if (timerObj.interval) clearInterval(timerObj.interval);
+
+                // WIPE SAVE FILE IF SKIPPED AT INTRO SCREEN!
+                if (type === 'intro') {
+                    localStorage.removeItem(SAVE_KEY);
+                    tempPendingSave = null;
+                    closeModal('introModal');
+                }
+                if (type === 'vip') closeModal('vipJokeModal');
+                if (type === 'premium') closeModal('premiumJokeModal');
+
+                triggerPenaltySpinner(type);
+            } else {
+                // SAFE DISMISSAL
+                if (type === 'intro') {
+                    closeModal('introModal');
+                    
+                    // Check if saved game exists to offer Save Selection Modal
+                    if (tempPendingSave) {
+                        document.getElementById('saveModalBakeryName').innerText = tempPendingSave.bakeryName || "Luca's Bakery";
+                        document.getElementById('saveModalCookieCount').innerText = formatNumber(tempPendingSave.cookies || 0);
+                        document.getElementById('savePromptModal').classList.remove('hidden');
+                    }
+                } else if (type === 'vip') {
+                    closeModal('vipJokeModal');
+                    gameState.isVip = true;
+                    gameState.vipTimeRemaining = DURATION_5_MINS;
+                    gameState.cookies += 500000;
+                    gameState.totalBaked += 500000;
+                    playSound('win');
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                } else if (type === 'premium') {
+                    closeModal('premiumJokeModal');
+                    gameState.isPremium = true;
+                    gameState.premiumTimeRemaining = DURATION_5_MINS;
+                    gameState.cookies += 50000000;
+                    gameState.totalBaked += 50000000;
+                    playSound('win');
+                    confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 } });
+                }
                 updateUI();
             }
-        }, 100);
-
-        function saveGame() {
-            try {
-                localStorage.setItem('deluxe_cookie_clicker_save', JSON.stringify(gameState));
-            } catch (e) {
-                console.error("Save failed:", e);
-            }
         }
 
-        function loadGame() {
-            try {
-                const saved = localStorage.getItem('deluxe_cookie_clicker_save');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    // Merge saved state over default state safely
-                    gameState = { ...gameState, ...parsed };
-                    
-                    // Re-check cheat activation
-                    checkCheatCode(gameState.bakeryName);
+        function confirmLoadSavedGame() {
+            playSound('click');
+            if (tempPendingSave) {
+                gameState.cookies = tempPendingSave.cookies || 0;
+                gameState.totalBaked = tempPendingSave.totalBaked || 0;
+                gameState.bakeryName = tempPendingSave.bakeryName || "Luca's Bakery";
+
+                if (tempPendingSave.buildings) {
+                    Object.keys(tempPendingSave.buildings).forEach(k => {
+                        if (gameState.buildings[k]) {
+                            gameState.buildings[k].count = tempPendingSave.buildings[k].count || 0;
+                            gameState.buildings[k].cost = tempPendingSave.buildings[k].cost || initialBuildings[k].cost;
+                        }
+                    });
                 }
-            } catch (e) {
-                console.error("Load failed:", e);
+
+                if (tempPendingSave.upgrades) {
+                    Object.keys(tempPendingSave.upgrades).forEach(k => {
+                        if (gameState.upgrades[k]) {
+                            gameState.upgrades[k].bought = !!tempPendingSave.upgrades[k].bought;
+                        }
+                    });
+                }
+            }
+            closeModal('savePromptModal');
+            updateUI();
+        }
+
+        function confirmStartNewGame() {
+            playSound('click');
+            localStorage.removeItem(SAVE_KEY);
+            tempPendingSave = null;
+            
+            // Reset to default fresh state
+            gameState.cookies = 0;
+            gameState.totalBaked = 0;
+            gameState.bakeryName = "Luca's Bakery";
+            gameState.buildings = JSON.parse(JSON.stringify(initialBuildings));
+            gameState.upgrades = JSON.parse(JSON.stringify(initialUpgrades));
+
+            closeModal('savePromptModal');
+            updateUI();
+        }
+
+        function drawWheel(contextType) {
+            const canvas = document.getElementById('wheelCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 280, 280);
+
+            let label1 = "", label2 = "";
+            if (contextType === 'intro') {
+                label1 = "START AT -67,000 COOKIES";
+                label2 = "PERMANENT BUFF DOWN";
+            } else {
+                label1 = "LOSE 50% COOKIES";
+                label2 = "RESTART ENTIRE GAME";
+            }
+
+            // Slice 1: Bottom Half
+            ctx.beginPath();
+            ctx.moveTo(140, 140);
+            ctx.arc(140, 140, 140, 0, Math.PI);
+            ctx.fillStyle = '#dc2626';
+            ctx.fill();
+
+            // Slice 2: Top Half
+            ctx.beginPath();
+            ctx.moveTo(140, 140);
+            ctx.arc(140, 140, 140, Math.PI, 2 * Math.PI);
+            ctx.fillStyle = '#7f1d1d';
+            ctx.fill();
+
+            // Divider Line
+            ctx.beginPath();
+            ctx.moveTo(0, 140);
+            ctx.lineTo(280, 140);
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px Outfit';
+            ctx.textAlign = 'center';
+
+            ctx.save();
+            ctx.translate(140, 195);
+            ctx.fillText(label1, 0, 0);
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(140, 85);
+            ctx.fillText(label2, 0, 0);
+            ctx.restore();
+        }
+
+        function triggerPenaltySpinner(contextType) {
+            playSound('alarm');
+
+            const modal = document.getElementById('penaltyWheelModal');
+            const statusText = document.getElementById('wheelStatusText');
+            const dismissBtn = document.getElementById('dismissPenaltyBtn');
+
+            dismissBtn.classList.add('hidden');
+            statusText.innerText = "SPINNING PUNISHMENT WHEEL...";
+            statusText.className = "mt-3 text-sm font-game text-yellow-400 animate-pulse";
+            modal.classList.remove('hidden');
+
+            const canvas = document.getElementById('wheelCanvas');
+            canvas.style.transition = 'none';
+            canvas.style.transform = 'rotate(0deg)';
+
+            drawWheel(contextType);
+
+            const outcome = Math.random() < 0.5 ? 0 : 1;
+            const baseSpins = 360 * 5; 
+            const targetAngle = outcome === 0 ? (baseSpins + 90) : (baseSpins + 270);
+
+            setTimeout(() => {
+                canvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.9, 0.2, 1)';
+                canvas.style.transform = `rotate(${targetAngle}deg)`;
+            }, 50);
+
+            let sirenCount = 0;
+            const sirenInterval = setInterval(() => {
+                if (sirenCount > 6) clearInterval(sirenInterval);
+                else { playSound('alarm'); sirenCount++; }
+            }, 500);
+
+            setTimeout(() => {
+                if (contextType === 'intro') {
+                    if (outcome === 0) {
+                        gameState.cookies = -67000;
+                        statusText.innerText = "PENALTY LANDED: START AT -67,000 COOKIES!";
+                        statusText.className = "mt-3 text-sm font-game text-red-400 font-extrabold";
+                    } else {
+                        gameState.permanentBuffDown = true;
+                        gameState.isVip = false;
+                        gameState.isPremium = false;
+                        statusText.innerText = "PENALTY LANDED: PERMANENT BUFF DOWN! VIP & PREMIUM LOCKED!";
+                        statusText.className = "mt-3 text-sm font-game text-amber-400 font-extrabold";
+                    }
+                } else {
+                    if (outcome === 0) {
+                        gameState.cookies = Math.floor(gameState.cookies * 0.5);
+                        statusText.innerText = "PENALTY LANDED: LOSE 50% OF ALL COOKIES!";
+                        statusText.className = "mt-3 text-sm font-game text-red-400 font-extrabold";
+                    } else {
+                        gameState.cookies = 0;
+                        gameState.totalBaked = 0;
+                        gameState.isVip = false;
+                        gameState.vipTimeRemaining = 0;
+                        gameState.isPremium = false;
+                        gameState.premiumTimeRemaining = 0;
+                        gameState.hacksUnlocked = false;
+                        gameState.godMode = false;
+                        gameState.hasWon = false;
+                        gameState.buildings = JSON.parse(JSON.stringify(initialBuildings));
+                        gameState.upgrades = JSON.parse(JSON.stringify(initialUpgrades));
+
+                        statusText.innerText = "PENALTY LANDED: COMPLETE GAME RESTART!";
+                        statusText.className = "mt-3 text-sm font-game text-red-500 font-extrabold";
+                    }
+                }
+
+                updateUI();
+                dismissBtn.classList.remove('hidden');
+            }, 4200);
+        }
+
+        function dismissPenaltyScreen() {
+            playSound('click');
+            document.getElementById('penaltyWheelModal').classList.add('hidden');
+        }
+
+        function spawnGoldenCookie() {
+            const container = document.getElementById('goldenCookieContainer');
+            if (!container) return;
+
+            const existing = document.getElementById('goldenCookieObj');
+            if (existing) existing.remove();
+
+            const gc = document.createElement('button');
+            gc.id = 'goldenCookieObj';
+            gc.className = 'absolute w-12 h-12 rounded-full cursor-pointer transition-transform hover:scale-125 animate-bounce z-30 focus:outline-none pointer-events-auto';
+            gc.style.left = `${10 + Math.random() * 80}%`;
+            gc.style.top = `${10 + Math.random() * 80}%`;
+            gc.innerHTML = `
+                <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-xl">
+                    <circle cx="50" cy="50" r="45" fill="#FBBF24" stroke="#D97706" stroke-width="5"/>
+                    <circle cx="35" cy="35" r="6" fill="#78350F"/>
+                    <circle cx="65" cy="40" r="7" fill="#78350F"/>
+                    <circle cx="50" cy="70" r="6" fill="#78350F"/>
+                </svg>
+            `;
+
+            gc.onclick = function(e) {
+                e.stopPropagation();
+                const bonus = Math.max(100, getCPS() * 30 + getCPC() * 20);
+                gameState.cookies += bonus;
+                gameState.totalBaked += bonus;
+                playSound('golden');
+                createFloatingNumber(e, `+${formatNumber(bonus)} GOLDEN!`);
+                gc.remove();
+                checkWinCondition();
+                updateUI();
+            };
+
+            container.appendChild(gc);
+            setTimeout(() => { if (gc.parentNode) gc.remove(); }, 8000);
+        }
+
+        function checkWinCondition() {
+            if (gameState.totalBaked >= WIN_GOAL && !gameState.hasWon) {
+                gameState.hasWon = true;
+                playSound('win');
+                confetti({ particleCount: 300, spread: 120, origin: { y: 0.5 } });
+                
+                document.getElementById('winBakeryName').innerText = gameState.bakeryName;
+                document.getElementById('winTotalCookies').innerText = formatNumber(gameState.totalBaked);
+                document.getElementById('winModal').classList.remove('hidden');
             }
         }
 
         function resetGamePrompt() {
-            if (confirm("Are you sure you want to reset all game progress?")) {
-                localStorage.removeItem('deluxe_cookie_clicker_save');
+            if (confirm("Are you sure you want to reset your bakery and all progress?")) {
+                localStorage.removeItem(SAVE_KEY);
                 location.reload();
             }
         }
 
-        // Initialize Game
-        window.onload = function() {
-            loadGame();
+        function closeModal(id) {
+            playSound('click');
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function updateUI() {
+            const cps = getCPS();
+            const cpc = getCPC();
+
+            document.getElementById('cookieCountDisplay').innerText = formatNumber(gameState.cookies);
+            document.getElementById('cpsSubDisplay').innerText = `+${formatNumber(cps)} per second`;
+            document.getElementById('cpcDisplay').innerText = formatNumber(cpc);
+            document.getElementById('cpsDisplay').innerText = formatNumber(cps);
+            document.getElementById('totalBakedDisplay').innerText = formatNumber(gameState.totalBaked);
+            document.getElementById('bakeryNameDisplay').innerText = gameState.bakeryName;
+
+            const winPct = Math.min(100, Math.max(0, (gameState.totalBaked / WIN_GOAL) * 100));
+            document.getElementById('winProgressBar').style.width = `${winPct}%`;
+
+            const vipBtn = document.getElementById('vipBuyBtn');
+            const premiumBtn = document.getElementById('premiumBuyBtn');
+            const debuffBadge = document.getElementById('debuffBadge');
+
+            if (gameState.permanentBuffDown) {
+                debuffBadge.classList.remove('hidden');
+                vipBtn.disabled = true;
+                vipBtn.className = "bg-slate-800 text-slate-500 font-bold px-3 py-1.5 rounded-xl border border-slate-700 text-xs opacity-50 cursor-not-allowed flex items-center gap-1";
+                vipBtn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i> VIP LOCKED`;
+
+                premiumBtn.disabled = true;
+                premiumBtn.className = "bg-slate-800 text-slate-500 font-bold px-3 py-1.5 rounded-xl border border-slate-700 text-xs opacity-50 cursor-not-allowed flex items-center gap-1";
+                premiumBtn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i> PREMIUM LOCKED`;
+            } else {
+                debuffBadge.classList.add('hidden');
+            }
+
+            // VIP Badges and Timers
+            const vipActive = gameState.isVip && gameState.vipTimeRemaining > 0;
+            document.getElementById('vipBadge').classList.toggle('hidden', !vipActive);
+            document.getElementById('vipSidebarCard').classList.toggle('hidden', !vipActive);
+            if (!gameState.permanentBuffDown) {
+                vipBtn.classList.toggle('hidden', vipActive);
+            }
+            if (vipActive) {
+                const formattedTime = formatTimerSeconds(gameState.vipTimeRemaining);
+                document.getElementById('vipHeaderTimer').innerText = formattedTime;
+                document.getElementById('vipSidebarTimer').innerText = formattedTime;
+            }
+
+            // Premium Badges and Timers
+            const premiumActive = gameState.isPremium && gameState.premiumTimeRemaining > 0;
+            document.getElementById('premiumBadge').classList.toggle('hidden', !premiumActive);
+            document.getElementById('premiumSidebarCard').classList.toggle('hidden', !premiumActive);
+            if (!gameState.permanentBuffDown) {
+                premiumBtn.classList.toggle('hidden', premiumActive);
+            }
+            if (premiumActive) {
+                const formattedTime = formatTimerSeconds(gameState.premiumTimeRemaining);
+                document.getElementById('premiumHeaderTimer').innerText = formattedTime;
+                document.getElementById('premiumSidebarTimer').innerText = formattedTime;
+            }
+
+            if (gameState.hacksUnlocked) {
+                document.getElementById('tabHacksBtn').classList.remove('hidden');
+                document.getElementById('hackUnlockedBanner').classList.remove('hidden');
+            }
+            document.getElementById('godModeStatusBadge').innerText = gameState.godMode ? "ON (1000x)" : "OFF";
+            document.getElementById('godModeStatusBadge').className = gameState.godMode ? "text-[10px] bg-emerald-950 px-2 py-0.5 rounded text-emerald-400 border border-emerald-700" : "text-[10px] bg-slate-900 px-2 py-0.5 rounded text-slate-400 border border-slate-700";
+
+            const svg = document.getElementById('cookieSvg');
+            if (premiumActive) {
+                svg.className = "w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 drop-shadow-2xl transition-all rounded-full premium-rainbow-glow";
+            } else if (vipActive) {
+                svg.className = "w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 drop-shadow-2xl transition-all rounded-full vip-gold-glow";
+            } else {
+                svg.className = "w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 drop-shadow-2xl transition-all rounded-full";
+            }
+
+            renderBuildings();
+            renderUpgrades();
+            saveGame();
+        }
+
+        function saveGame() {
+            try {
+                const dataToSave = {
+                    cookies: gameState.cookies,
+                    totalBaked: gameState.totalBaked,
+                    bakeryName: gameState.bakeryName,
+                    buildings: gameState.buildings,
+                    upgrades: gameState.upgrades
+                };
+                localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
+            } catch (e) {}
+        }
+
+        function checkPendingSave() {
+            try {
+                const saved = localStorage.getItem(SAVE_KEY);
+                if (saved) {
+                    tempPendingSave = JSON.parse(saved);
+                }
+            } catch (e) {
+                tempPendingSave = null;
+            }
+        }
+
+        let lastTick = Date.now();
+        setInterval(() => {
+            const now = Date.now();
+            const delta = (now - lastTick) / 1000;
+            lastTick = now;
+
+            if (gameState.isVip && gameState.vipTimeRemaining > 0) {
+                gameState.vipTimeRemaining -= delta;
+                if (gameState.vipTimeRemaining <= 0) {
+                    gameState.isVip = false;
+                    gameState.vipTimeRemaining = 0;
+                    showToast("VIP Pass Expired!", "Your 5-minute VIP Pass has expired. Re-purchase to renew!");
+                }
+            }
+
+            if (gameState.isPremium && gameState.premiumTimeRemaining > 0) {
+                gameState.premiumTimeRemaining -= delta;
+                if (gameState.premiumTimeRemaining <= 0) {
+                    gameState.isPremium = false;
+                    gameState.premiumTimeRemaining = 0;
+                    showToast("Premium Mode Expired!", "Your 5-minute Premium Pass has expired. Re-purchase to renew!");
+                }
+            }
+
+            const cps = getCPS();
+            if (cps > 0) {
+                const gained = cps * delta;
+                gameState.cookies += gained;
+                gameState.totalBaked += gained;
+                checkWinCondition();
+            }
             updateUI();
+        }, 100);
+
+        setInterval(() => {
+            let chance = (gameState.upgrades.golden1 && gameState.upgrades.golden1.bought) ? 0.7 : 0.4;
+            if (Math.random() < chance) {
+                spawnGoldenCookie();
+            }
+        }, 45000);
+
+        window.onload = function() {
+            checkPendingSave();
+            updateUI();
+            openIntroModal();
         };
     </script>
 </body>
