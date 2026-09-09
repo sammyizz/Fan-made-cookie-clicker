@@ -1,35 +1,69 @@
-// Bakery Game Custom Logic Script
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bakery Game Mod</title>
+</head>
+<body>
 
-let cookies = 1000; // Example cookie count
-let bakeryName = "";
-let isDevUnlocked = false;
+    <div id="game">
+        <h1>My Bakery</h1>
+        <p>Cookies: <span id="cookieCount">1000</span></p>
 
-// 1. Set Bakery Name & Check Dev Hack Unlock
-function checkBakeryName(nameInput) {
-    bakeryName = nameInput.trim().toLowerCase();
-    if (bakeryName === "luca is the goat") {
-        isDevUnlocked = true;
-        console.log("Dev hacks unlocked!");
-    }
-}
+        <!-- 1. Bakery Name -->
+        <label>Bakery Name: </label>
+        <input type="text" id="bakeryNameInput" placeholder="Enter bakery name">
+        <button onclick="setBakeryName()">Save Name</button>
+        <p id="devStatus" style="color: green; font-weight: bold;"></p>
 
-// 2. Fake VIP / Premium Checkout
-function buyVipOrPremium() {
-    alert("Processing payment with real money...");
-    setTimeout(() => {
-        alert("Just kidding!");
-    }, 1000);
-}
+        <br><br>
 
-// 3. Hack Power Input (Secret Code or Credit Card)
-function submitHackInput(userInput) {
-    if (userInput === "zaddy") {
-        alert("Secret code accepted! Hack powers enabled.");
-    } else {
-        // Triggers when a credit card number or any other non-code text is entered
-        alert("Ha ha ima take your money!");
-        cookies = cookies * 0.5;
-        console.log(`Cookies reduced by 50%. Current cookies: ${cookies}`);
-    }
-}
+        <!-- 2. VIP / Premium Button -->
+        <button onclick="buyVip()">Buy VIP / Premium</button>
 
+        <br><br>
+
+        <!-- 3. Hack Powers Input -->
+        <label>Hack Power Input (Code or CC): </label>
+        <input type="text" id="hackInput" placeholder="Enter code or card number">
+        <button onclick="submitHack()">Submit</button>
+    </div>
+
+    <script>
+        let cookies = 1000;
+
+        function updateDisplay() {
+            document.getElementById("cookieCount").innerText = Math.round(cookies);
+        }
+
+        function setBakeryName() {
+            let name = document.getElementById("bakeryNameInput").value.trim().toLowerCase();
+            let status = document.getElementById("devStatus");
+            if (name === "luca is the goat") {
+                status.innerText = "Developer Hacks Unlocked!";
+            } else {
+                status.innerText = "";
+            }
+        }
+
+        function buyVip() {
+            alert("Processing payment with real money...");
+            setTimeout(() => {
+                alert("Just kidding!");
+            }, 500);
+        }
+
+        function submitHack() {
+            let input = document.getElementById("hackInput").value.trim();
+            if (input === "zaddy") {
+                alert("Secret code accepted! Hack powers enabled.");
+            } else {
+                alert("Ha ha ima take your money!");
+                cookies = cookies * 0.5;
+                updateDisplay();
+            }
+        }
+    </script>
+
+</body>
+</html>
